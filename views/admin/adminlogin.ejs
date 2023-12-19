@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login page</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background: url('images/bgimage.png') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+
+        .container {
+            background-color:transparent;
+            border: 1px  #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+            padding: 50px 150px;
+        }
+        .forgot{
+            text-decoration: none;
+            justify-content: center;
+            display: flex;
+        }
+        .alter{
+            color: red;
+        }
+
+        h2 {
+            text-align: center;
+        }
+        p{
+            text-align: center;
+            color: red;
+        }
+        
+
+        form {
+            text-align: center;
+        }
+
+        label, input {
+            display: block;
+            margin: 10px 0;
+        }
+
+        input[type="text"], input[type="password"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            background:linear-gradient(to right,violet,rgb(94, 31, 106));
+            color: #fff;
+            cursor: pointer;
+            border-radius: 50px;
+            margin-left: 10px;
+            border: none;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>ADMIN LOGIN PAGE</h2>
+        <form action="/admin/adminlogin" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter Usernname" required>
+            <% if(locals.username){%>
+                <div class="alter text-danger text-start"><%=username%></div>
+    
+            <%}%>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter Password" required>
+            <% if(locals.passworderror){%>
+                <div class="alter text-danger text-start"><%=passworderror%></div>
+    
+            <%}%>
+            <input type="submit" value="Login">
+        </form>
+        
+    </div>
+</body>
+</html>
