@@ -5,7 +5,8 @@ const admincontroller=require("../server/controllers/admincontroller")
 const adminrouter=express.Router()
 const productcontroller=require("../server/controllers/productcontroller")
 const sessions=require("../middleware/isadAuth")
-
+const ordercontroller=require('../server/controllers/ordercontrol')
+const couponcontroller=require("../server/controllers/couponcontroller")
 const upload=multer({dest:'uploads'})
 const app=express();
 
@@ -45,5 +46,16 @@ adminrouter.get("/editimg/:id/",sessions.adisAuth,productcontroller.editing)
 adminrouter.get("/deleteimg",sessions.adisAuth,productcontroller.deleteimg)
 adminrouter.post("/updateimg/:id",sessions.adisAuth,upload.array('images'),productcontroller.updateimg)
 adminrouter.post("/updateproduct/:id",sessions.adisAuth,productcontroller.updateproduct)
+
+adminrouter.get("/orderPage",sessions.adisAuth,ordercontroller.orderPage)
+adminrouter.post("/updateOrderStatus",sessions.adisAuth,ordercontroller.updateorderstatus)
+
+
+adminrouter.get('/couponList',sessions.adisAuth,couponcontroller.couponList)
+adminrouter.get('/newcoupon',sessions.adisAuth,couponcontroller.addcouponpage)
+adminrouter.post('/add_coupon',sessions.adisAuth,couponcontroller.createCoupon)
+adminrouter.get('/unlistCoupon/:id',sessions.adisAuth,couponcontroller.unlistCoupon)
+adminrouter.get('/editCouponGet/:id',sessions.adisAuth,couponcontroller.editCouponPage)
+adminrouter.post('/updateCoupon',sessions.adisAuth,couponcontroller.updateCoupon)
 
 module.exports=adminrouter

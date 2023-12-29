@@ -10,22 +10,22 @@
     <link rel="shortcut icon" type="image/x-icon" href="user_assets/img/favicon.ico">
 
     <!-- CSS here -->
-    <link rel="stylesheet" href="user_assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="user_assets/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="user_assets/css/flaticon.css">
-    <link rel="stylesheet" href="user_assets/css/slicknav.css">
-    <link rel="stylesheet" href="user_assets/css/animate.min.css">
-    <link rel="stylesheet" href="user_assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="user_assets/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="user_assets/css/themify-icons.css">
-    <link rel="stylesheet" href="user_assets/css/slick.css">
-    <link rel="stylesheet" href="user_assets/css/nice-select.css">
-    <link rel="stylesheet" href="user_assets/css/style.css">
+    <link rel="stylesheet" href="/user_assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/user_assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/user_assets/css/flaticon.css">
+    <link rel="stylesheet" href="/user_assets/css/slicknav.css">
+    <link rel="stylesheet" href="/user_assets/css/animate.min.css">
+    <link rel="stylesheet" href="/user_assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="/user_assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/user_assets/css/themify-icons.css">
+    <link rel="stylesheet" href="/user_assets/css/slick.css">
+    <link rel="stylesheet" href="/user_assets/css/nice-select.css">
+    <link rel="stylesheet" href="/user_assets/css/style.css">
 </head>
 
 <body>
     <!--? Preloader Start -->
-    <div id="preloader-active">
+    <!-- <div id="preloader-active">
         <div class="preloader d-flex align-items-center justify-content-center">
             <div class="preloader-inner position-relative">
                 <div class="preloader-circle"></div>
@@ -34,7 +34,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- Preloader Start -->
     <header>
         <!-- Header Start -->
@@ -51,7 +51,7 @@
                             <nav>                                                
                                 <ul id="navigation">  
                                     <li><a href="/">Home</a></li>
-                                    <li><a href="/shop">shop</a></li>
+                                    
                                     <!-- <li><a href="about.html">about</a></li> -->
                                     <li class="hot"><a href="#">Latest</a>
                                         <ul class="submenu">
@@ -78,13 +78,16 @@
                         <div class="header-right">
                             <ul>
                                 <li>
-                                    <div class="nav-search search-switch">
-                                        <span class="flaticon-search"></span>
-                                    </div>
+                                    <div class="search-bar">
+          <form action="/searchProducts"method='post'>
+            <input name="searchProducts" type="text" class="search-input" placeholder="Search...">
+          <button class="search-button"><img src="/user_assets/img/adapt_icon/search-50.png" style="height: 20px;"></button>
+            </form>
+          </div>
                                 </li>
                                 <li> <a href="/profile"><span class="flaticon-user"></span></a></li>
                                 <li><a href="wishlist.html"> <span class="flaticon-heart"></span></a> </li>
-                                <li><a href="cart.html"><span class="flaticon-shopping-cart"></span></a> </li>
+                                <li><a href="/cartpage"><span class="flaticon-shopping-cart"></span></a> </li>
                             </ul>
                         </div>
                     </div>
@@ -99,6 +102,75 @@
 
 
 
+        <div class="fulldiv my-5 d-flex justify-content-center">
+            <div class="product-container">
+                <div class="product-image">
+                    <a href="/<%= product.images[0] %>" class="MagicZoom" id="Mag">
+                        <img id="mainImage" src="/<%= product.images[0] %>" alt="Product Image" class="img-fluid" style="width: 300px; height: 300px; object-fit: cover;">
+                    </a>
+                </div>
+            </div>
+            
+        
+            <!-- Product Details Section -->
+          <div class="product-details-section">
+                <h1><%= product.name %></h1>
+          <p class="price">
+                    RS.<%= product.price.toFixed(2) %>
+    
+                <div class="description">
+                    <p><strong>Description:</strong></p>
+                    <p><%= product.description %></p>
+                </div>
+                <a href="/addtocart/<%= product._id %>" class="btn btn-primary" >Add to Cart</a>
+                <a href="/addtofavourites/<%=product._id%>"><button class="btn btn-secondary">
+                    <span class="fas fa-heart"></span> Add to Wishlist
+                  </button></a>
+    
+                <!-- Add your buttons, forms, and other details as needed -->
+            </div>
+        </div>
+        <!-- Similar Products Section -->
+        
+        <!-- <div class="product-details-section">
+            <h1><%= product.name %></h1>
+            <p class="price">
+                <% if (product.price !== undefined) { %>
+                    Rs.<%= product.price.toFixed(2) %>
+                <% } %>
+            </p>
+            <div class="description">
+                <p><strong>Description:</strong></p>
+                <p><%= product.description %></p>
+            </div>
+    
+      </div> -->
+        <!-- Similar Products Section -->
+<div class="container">
+    <div class="row">
+        <% if (locals.similar && locals.similar.length > 0) { %>
+            <div class="similar-products-section ml-3 mt-5">
+                <h1 style="text-align: center; margin-bottom: 30px;">Similar Products</h1>
+                <div class="row similar-products-container">
+                    <% locals.similar.forEach(product => { %>
+                        <div class="col-12 col-md-4 col-lg-3 mb-4 product-item">
+                            <a class="product-item" href="/singleproduct/<%= product._id %>" data-types="<%= product.type %>">
+                                <div class="card fixed-card-size">
+                                    <img src="/<%= product.images[0] %>" class="card-img-top img-fluid product-thumbnail" alt="<%= product.name %>" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body" style="height: 200px; width: 500px;">
+                                        <h3 class="card-title product-title"><%= product.name %></h3>
+                                        <p class="card-text product-price">₹<%= product.price.toFixed(2) %></p>
+                                        <a href="/singleproduct/<%= product._id %>" class="btn btn-primary" >View Details</a>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
 
 
 

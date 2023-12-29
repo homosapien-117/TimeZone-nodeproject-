@@ -37,7 +37,9 @@ const userschema = new mongoose.Schema({
         isAdmin:{
                 type:Boolean,
                 default:false
-        }
+        },
+        usedCoupons:
+        [{ type: String }]
 
 })
 

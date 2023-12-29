@@ -66,7 +66,7 @@
                             <nav>                                                
                                 <ul id="navigation">  
                                     <li><a href="/">Home</a></li>
-                                    <li><a href="/shop">shop</a></li>
+                                    
                                     <!-- <li><a href="about.html">about</a></li> -->
                                     <li class="hot"><a href="#">Latest</a>
                                         <ul class="submenu">
@@ -99,13 +99,16 @@
                         <div class="header-right">
                             <ul>
                                 <li>
-                                    <div class="nav-search search-switch">
-                                        <span class="flaticon-search"></span>
-                                    </div>
+                                    <div class="search-bar">
+          <form action="/searchProducts"method='post'>
+            <input name="searchProducts" type="text" class="search-input" placeholder="Search...">
+          <button class="search-button"><img src="/user_assets/img/adapt_icon/search-50.png" style="height: 20px;"></button>
+            </form>
+          </div>
                                 </li>
                                 <li> <a href="/profile"><span class="flaticon-user"></span></a></li>
                                 <li><a href="wishlist.html"> <span class="flaticon-heart"></span></a> </li>
-                                <li><a href="cart.html"><span class="flaticon-shopping-cart"></span></a> </li>
+                                <li><a href="/cart"><span class="flaticon-shopping-cart"></span></a> </li>
                             </ul>
                         </div>
                     </div>
@@ -119,7 +122,84 @@
         <!-- Header End -->
     </header>
     
-    <div class="container">
+
+    <div class="hero">
+        <div class="container">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-lg-5">
+                    <div class="intro-excerpt">
+                        <h1><%= categoryName %></h1>
+                    </div>
+                </div>
+                <div class="col-lg-7 d-flex justify-content-end align-items-center">
+                    <div class="sorting-filtering-options">
+                        <!-- Sorting Options -->
+                        <div class="sorting-options">
+                        <form id="sortform" action="/sortProducts" method="GET">
+                            <select id="sortSelect"  name="sortPro" class="form-control-lg" onchange="submitSortForm()">
+                                <% if (locals.sorting) { %>
+                                <option value="default"  disabled selected><%=sorting%></option>
+                                <% } else { %>
+                                    <option value="default"; disabled selected>Sort-by</option>
+                                    <% } %>
+
+                                <option value="1">Price: Low To High</option>
+                                <option value="-1">Price: High To Low</option>
+
+                                <!-- Add more options based on your needs -->
+                            </select>
+                            <input type="hidden" name="category" value="<%= selectedCategory %>">
+                            <% if (locals.selectedType) { %>
+                            <input type="hidden" name="type" value="<%= selectedType || 'All'%>">
+                            <% } else { %>
+                                <input type="hidden" name="type" value="All">
+                            <% } %>
+                        </form>
+
+                        </div>
+            
+                        <!-- Filtering Options -->
+                        <!-- <div class="filtering-options">
+                            <form id="filterForm" action="/filterProducts" method="GET">
+                                
+                                <select id="filterSelect" name="filterType" class="form-control-lg" onchange="submitFilterForm()">
+                                    <% if (locals.selectedType) { %>
+                                    <option value="default" disabled selected><%=selectedType%></option>
+                                    <% } else { %>
+                                        <option value="default" disabled selected>Filter-by</option>
+                                        <% } %>
+
+                                    <% console.log("categoryItem", theCategory); %>
+                                    <% if (theCategory && theCategory[0].types) { %>
+                                        <% console.log("categoryItem"); %>
+                                        <% theCategory[0].types.forEach(function(option) { %>
+                                            <option value="<%= option %>"><span><%= option %></span></option>
+                                        <% }); %>
+                                    <% } %>
+                                    
+                                </select>
+                                <input type="hidden" name="category" value="<%= selectedCategory %>">
+                                <% if (locals.sortoption) { %>
+                                    <input type="hidden" name="sortoption" value="<%= sortoption%>">
+                                    <% } %>
+                            </form>
+                        </div> -->
+    
+                        <!-- Add styling and additional UI elements as needed -->
+                        <!-- For example, you can use buttons, icons, etc. -->
+    
+                        <!-- Example button -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="container" >
         <div class="row">
           <% products.filter(category => category.status !== false).forEach(product => { %>
             <div class="col-12 col-md-4 col-lg-3 mb-4">
@@ -259,6 +339,15 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
       });
     });
   </script>
+
+<script>
+    function submitFilterForm() {
+document.getElementById('filterForm').submit();
+}
+function submitSortForm() {
+document.getElementById('sortform').submit();
+}
+   </script>
   
 <script src="./user_assets/js/vendor/modernizr-3.5.0.min.js"></script>
 <!-- Jquery, Popper, Bootstrap -->

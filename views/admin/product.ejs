@@ -4,7 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Village Admin</title>
+    <title>Coffee Blend Admin</title>
     <link rel="stylesheet" href="/adminassets/vendors/mdi/css/materialdesignicons.min.css" />
     <link rel="stylesheet" href="/adminassets/vendors/flag-icon-css/css/flag-icon.min.css" />
     <link rel="stylesheet" href="/adminassets/vendors/css/vendor.bundle.base.css" />
@@ -57,7 +57,7 @@
                         <th>Name</th>
                         <!-- <th>image</th> -->
                         <th>Category</th>
-                        <th>Stock</th>
+                        <!-- <th>Stock</th> -->
                         <th>Price</th>
                         <th>Image</th>
                         <th>Description</th>
@@ -86,6 +86,7 @@
                       <td>
                         <% if ( data.images.length > 0) { %>
                         <img style="border-radius: 0%; width: 100px;height: 100px;"src="/<%= data.images[0] %>"></td>
+                        
                         <% } %>
                       <!-- <td><%= data.description %></td> -->
                       <td><%= data.status? 'Listed' : 'Unlisted' %></td>
@@ -123,7 +124,7 @@
     const stockDiv = document.getElementById(`stock_${rowIndex}`);
     const selectedStock = stock.find(item => item.size === selectedSize);
     if (selectedStock) {
-        stockDiv.textContent = ` ${selectedStock.quantity}`;
+        stockDiv.textContent =  `${selectedStock.quantity}`;
     } else {
         stockDiv.textContent = 'No stock available for the selected size.';
     }
