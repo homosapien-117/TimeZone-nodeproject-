@@ -56,6 +56,16 @@
                         <input type="text" class="form-control ml-2" id="categoryName" name="stock" value="<%= product.stock %>" style="height:15px;width: 50px;" required>
                         
                     </div>
+                    <div class="mb-3">
+                      <label for="parentCategory" class="form-label">Category:</label>
+                      <select class="form-select" id="parentCategory" name="parentCategory"   required>
+                        <option value="" disabled selected>Select Category</option>
+                        <% category.forEach(category => { %>
+                            <option value="<%= category._id %>"><%= category.name %></option>
+                        <% }); %>
+                    </select>
+                    
+                  </div>
         
                     <div class="mb-3">
                       <label for="description" class="form-label">Description:</label>

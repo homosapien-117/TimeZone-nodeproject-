@@ -105,27 +105,32 @@
         <div class="slider-area ">
             <div class="slider-active">
                 <!-- Single Slider -->
-                <div class="single-slider slider-height d-flex align-items-center slide-bg">
-                    <div class="container">
-                        <div class="row justify-content-between align-items-center">
-                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                                <div class="hero__caption">
-                                    <h1 data-animation="fadeInLeft" data-delay=".4s" data-duration="2000ms">Select Your New Perfect Style</h1>
-                                    <p data-animation="fadeInLeft" data-delay=".7s" data-duration="2000ms">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat is aute irure.</p>
-                                    <!-- Hero-btn -->
-                                    <div class="hero__btn" data-animation="fadeInLeft" data-delay=".8s" data-duration="2000ms">
-                                        <a href="industries.html" class="btn hero-btn">Shop Now</a>
-                                    </div>
+                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <% banners.forEach(function(banner, index) { %>
+                            <% if (banner.active) { %>
+                                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                    <a href="/bannerURL?id=<%= banner._id %>">
+                                        <img src="<%= banner.image.url %>" class="d-block w-100 sliderimg" alt="<%= banner.title %>">
+                                        <div class="carousel-caption d-none d-md-block" style="color: <%= (banner.color !== undefined && banner.color !== null) ? banner.color : '#fff' %>;">
+                                            <h1 style="font-size: 120px;"><%= banner.title %></h1>
+                                            <h3><%= banner.subtitle %></h3>
+                                        </div>
+                                    </a>
                                 </div>
-                            </div>
-                            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 d-none d-sm-block">
-                                <div class="hero__img" data-animation="bounceIn" data-delay=".4s">
-                                    <img src="user_assets/img/hero/watch.png" alt="" class=" heartbeat">
-                                </div>
-                            </div>
-                        </div>
+                            <% } %>
+                        <% }); %>
                     </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev" style="background-color: transparent;border-color: transparent; ">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next" style="background-color: transparent;border-color: transparent; ">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
+
                 <!-- Single Slider -->
                 <div class="single-slider slider-height d-flex align-items-center slide-bg">
                     <div class="container">
@@ -543,6 +548,31 @@
     <!-- JS here -->
 
     <script src="./user_assets/js/vendor/modernizr-3.5.0.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var slider = tns({
+          container: '.category-slider',
+          items: 3,
+          axis: 'horizontal', // Set the axis to vertical
+          slideBy: 'page',
+          autoplay: true, // Set to true for automatic sliding
+          nav: false,
+          controls:false,
+          autoplayButtonOutput: false // Hide autoplay start/stop button
+  
+          });
+        });
+        </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          setInterval(function() {
+            document.querySelector('.carousel-control-next').click();
+          }, 10000);
+        });
+      </script>
+
     <!-- Jquery, Popper, Bootstrap -->
     <script src="./user_assets/js/vendor/jquery-1.12.4.min.js"></script>
     <script src="./user_assets/js/popper.min.js"></script>

@@ -8,6 +8,9 @@ const bcrypt=require("bcrypt")
 const mongoose =require("mongoose")
 const walletModel=require('../models/wallet_model')
 const couponModel=require('../models/coupon_model')
+const Razorpay=require("razorpay")
+const KEY_ID='rzp_test_PSAnCXtUPXVgWO';
+const key_secret='6lQXlklpxd83A1tDcJuMCznM';
 
 
 const checkoutreload=async(req,res)=>{
@@ -118,65 +121,80 @@ const checkoutreload=async(req,res)=>{
 }
 
 
-const placeorder=async(req,res)=>{
+const placeorder = async (req, res) => {
     try {
-        const categories=await catModel.find({});
-        const addressId=req.body.selectedAddressId;
-        const user=await userModel.findOne({
-            address:{$elemMatch:{_id:addressId}}
-        })
-        if(!user){
-            return res.status(404).send("user not found");
-        }
-        const selectedAddress=user.address.find((address)=>
-        address._id.equals(addressId))
-        const userId=req.session.userId
-        const username=selectedAddress.fullname;
-        const paymentMethod=req.body.selectedPaymentOption
-
-        const items=req.body.selectedProductNames.map((productName,index)=>({
-            productName:req.body.selectedProductNames[index],
-            productId:new mongoose.Types.ObjectId(req.body.selectedProductIds[index]),
-            quantity:parseInt(req.body.selectedQuantities[index]),
-            price:parseInt(req.body.selectedCartTotals[index]),
-        }))
-        const order=new orderModel({
-            orderId:shortid.generate(),
-            userId:userId,
-            userName:username,
-            items:items,
-            totalPrice:parseInt(req.body.carttotal),
-            shippingAddress:selectedAddress,
-            paymentMethod:paymentMethod,
-            updatedAt:new Date(),
-            createdAt:new Date(),
-            status:"pending",
-        })
-
-        console.log("items",items);
-        await order.save()
-
-        for(const item of items){
-            await cartModel.updateOne(
-                {userId:userId},
-                {$pull:{item:{productId:item.productId}}}
-            )
-            await cartModel.updateOne({userId:userId},{$set:{total:0}})
-        }
-
-        for(const item of items){
-            await productModel.updateOne(
-                {_id:item.productId},
-                {$inc:{stock:-item.quantity}}
-            )
-        }
-        res.render('user/orderconfirmation',{order,categories})
-        
+      const categories = await catModel.find({});
+      const addressId = req.body.selectedAddressId;
+      const user = await userModel.findOne({
+        address: { $elemMatch: { _id: addressId } },
+      });
+      if (!user) {
+        return res.status(404).send("user not found");
+      }
+      const selectedAddress = user.address.find((address) =>
+        address._id.equals(addressId)
+      );
+      const userId = req.session.userId;
+      const username = selectedAddress.fullname;
+      const paymentMethod = req.body.selectedPaymentOption;
+  
+      const items = req.body.selectedProductNames.map((productName, index) => ({
+        productName: req.body.selectedProductNames[index],
+        productId: new mongoose.Types.ObjectId(
+          req.body.selectedProductIds[index]
+        ),
+        quantity: parseInt(req.body.selectedQuantities[index]),
+        price: parseInt(req.body.selectedCartTotals[index]),
+      }));
+      const order = new orderModel({
+        orderId: shortid.generate(),
+        userId: userId,
+        userName: username,
+        items: items,
+        totalPrice: parseInt(req.body.carttotal),
+        shippingAddress: selectedAddress,
+        paymentMethod: paymentMethod,
+        updatedAt: date.format("YYYY-MM-DD HH:mm"),
+        createdAt: date.format("YYYY-MM-DD HH:mm"),
+        status: "pending",
+      });
+  
+      console.log("items", items);
+      await order.save();
+  
+      for (const item of items) {
+        await cartModel.updateOne(
+          { userId: userId },
+          { $pull: { item: { productId: item.productId } } }
+        );
+        await cartModel.updateOne({ userId: userId }, { $set: { total: 0 } });
+      }
+  
+      for (const item of items) {
+        await productModel.updateOne(
+          { _id: item.productId },
+          { $inc: { stock: -item.quantity } }
+        );
+      }
+      res.render("users/order_confirmation", { order, categories });
     } catch (error) {
-        console.log(error);
-        res.send(error)     
+      console.log(error);
+      res.send(error);
     }
-}
+  };
+  const instance = new Razorpay({ key_id: KEY_ID, key_secret: key_secret });
+  const upi = async (req, res) => {
+    console.log("body:", req.body);
+    var options = {
+      amount: 500,
+      currency: "INR",
+      receipt: "order_rcpt",
+    };
+    instance.orders.create(options, function (err, order) {
+      console.log("order1 :", order);
+      res.send({ orderId: order.id });
+    });
+  };
 
 const wallettransaction=async(req,res)=>{
     try {

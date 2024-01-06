@@ -7,6 +7,7 @@ const productcontroller=require("../server/controllers/productcontroller")
 const sessions=require("../middleware/isadAuth")
 const ordercontroller=require('../server/controllers/ordercontrol')
 const couponcontroller=require("../server/controllers/couponcontroller")
+const bannercontroller=require('../server/controllers/bannercontroller')
 const upload=multer({dest:'uploads'})
 const app=express();
 
@@ -57,5 +58,18 @@ adminrouter.post('/add_coupon',sessions.adisAuth,couponcontroller.createCoupon)
 adminrouter.get('/unlistCoupon/:id',sessions.adisAuth,couponcontroller.unlistCoupon)
 adminrouter.get('/editCouponGet/:id',sessions.adisAuth,couponcontroller.editCouponPage)
 adminrouter.post('/updateCoupon',sessions.adisAuth,couponcontroller.updateCoupon)
+
+
+adminrouter.post("/chartData",sessions.adisAuth,admincontroller.chartData)
+adminrouter.post('/downloadsales',sessions.adisAuth,admincontroller.downloadsales)
+
+
+adminrouter.get('/bannerList',sessions.adisAuth,bannercontroller.bannerList)
+adminrouter.get('/newbanner',sessions.adisAuth,bannercontroller.addbanner)
+adminrouter.post('/addBanner',upload.single('image'),sessions.adisAuth,bannercontroller.addBannerPost)
+adminrouter.get('/unlistBanner/:id',sessions.adisAuth,bannercontroller.unlistBanner)
+adminrouter.get('/updateBanner/:id',sessions.adisAuth,bannercontroller.updateBanner)
+adminrouter.post('/updateBannerPost/:id',upload.single('newImage'),sessions.adisAuth,bannercontroller.updateBannerPost)
+adminrouter.get('/deleteBanner/:id',sessions.adisAuth,bannercontroller.deleteBanner)
 
 module.exports=adminrouter

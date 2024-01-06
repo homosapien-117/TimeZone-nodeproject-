@@ -304,6 +304,15 @@
                         <input type="radio" name="paymentOption" value="Cash On Delivery" id="paymentOption1" onchange="updateHiddenField(this)">
                         Cash On Delivery
                     </label><br>
+                    <label>
+                      <input type="radio" name="paymentOption" value="Razorpay" id="paymentOption2" onchange="updateHiddenField(this)">
+                      Razorpay
+                      </label><br>
+        
+                      <label>
+                        <input type="radio" name="paymentOption" value="Wallet" id="paymentOption3" onchange="updateHiddenField(this)">
+                      Wallet
+                      </label><br>
 						
 							<!-- Hidden input fields for address details -->
 							<input type="hidden" name="selectedAddressId" id="selectedAddressId" value="<%= addresses.length > 0 ? addresses[0].id : '' %>">
@@ -325,7 +334,7 @@
 							<input type="hidden" name="cartId" value="<%= cart._id %>">
 
 							<div class="form-group">
-							<button class="btn btn-black btn-lg py-3 btn-block" type="button" onclick="cod()">Place Order</button>
+							<button class="btn btn-black btn-lg py-3 btn-block" type="button" onclick="razorpay()">Place Order</button>
 							</div>
 						</form>
 		
@@ -605,61 +614,207 @@ function couponApply() {
                     </script>
 
                     
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 
+<script>
+  async function razorpay() {
+    let amountToPay = document.getElementById('cartotal').innerText
+    var pay = document.querySelector('input[name="paymentOption"]:checked');
+    var addressTo = document.querySelector('input[name="selectedAddress"]:checked');
 
-        <script>
-    async function cod() {
-        let amountToPay = document.getElementById('cartotal').innerText;
-        var pay = document.querySelector('input[name="paymentOption"]:checked');
-        var addressTo = document.querySelector('input[name="selectedAddress"]:checked');
 
-        if (!pay) {
-            Swal.fire({
-                text: 'Please select a payment option',
-                icon: 'error',
-                confirmButtonText: 'OK',
-                customClass: {
-                    title: 'text-danger',
-                    popup: 'swal2-popup-custom',
-                    confirmButton: 'btn btn-danger'
-                },
-                showCancelButton: false,
-                showCloseButton: true,
-                showLoaderOnConfirm: false,
-                timer: 3000
-            });
-        } else if (!addressTo) {
-            Swal.fire({
-                text: 'Please select an address',
-                icon: 'error',
-                confirmButtonText: 'OK',
-                customClass: {
-                    title: 'text-danger',
-                    popup: 'swal2-popup-custom',
-                    confirmButton: 'btn btn-danger'
-                },
-                showCancelButton: false,
-                showCloseButton: true,
-                showLoaderOnConfirm: false,
-                timer: 3000
-            });
-        } else if (pay.value == 'Cash On Delivery') {
-            // Update the hidden field value
-            document.getElementById('selectedPaymentOption').value = 'Cash On Delivery';
+    if (!pay) {
+      Swal.fire({
+        //   title: 'Error!',
+        text: 'please select a payment option',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        customClass: {
+          title: 'text-danger',
+          popup: 'swal2-popup-custom',
+          confirmButton: 'btn btn-danger'
+        },
+        showCancelButton: false,
+        showCloseButton: true,
+        showLoaderOnConfirm: false,
+        timer: 3000
+      });
 
-            // Set the form action and method
-            document.getElementById('orderForm').action = '/placeOrder';
-            document.getElementById('orderForm').method = 'post';
+    }
+    else if (!addressTo) {
+      Swal.fire({
+        text: 'please select an address',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        customClass: {
+          title: 'text-danger',
+          popup: 'swal2-popup-custom',
+          confirmButton: 'btn btn-danger'
+        },
+        showCancelButton: false,
+        showCloseButton: true,
+        showLoaderOnConfirm: false,
+        timer: 3000
+      });
 
-            // Submit the form
-            document.getElementById('orderForm').submit();
+    }
+
+    else if (pay.value == 'Razorpay') {
+      console.log("upi total", "ppppppp");
+
+      var options = {
+        "key": 'rzp_test_2dpUf4O8fP4gpf',
+        "amount": amountToPay * 100,
+        "name": "village",
+        "description": "Test Transaction",
+        "image": "Village",
+        "order_id": orderId,
+        "handler": function (response) {
+          Swal.fire({
+        text: 'Your Order Has Been Placed',
+        icon: 'Success',
+        confirmButtonText: 'OK',
+        customClass: {
+          title: 'text-danger',
+          popup: 'swal2-popup-custom',
+          confirmButton: 'btn btn-danger'
+        },
+        showCancelButton: false,
+        showCloseButton: true,
+        showLoaderOnConfirm: false,
+        timer: 3000
+      });
+          document.getElementById('orderForm').action = '/placeOrder';
+          document.getElementById('orderForm').method = 'post';
+
+          // Submit the form
+          document.getElementById('orderForm').submit();
+
+        },
+
+
+        "theme": {
+          "color": "orange"
+        },
+      };
+      var rzp1 = new Razorpay(options);
+      rzp1.on('payment.failed', function (response) {
+        alert(response.error.code);
+        
+      });
+      rzp1.open();
+
+
+      e.preventDefault();
+
+
+      var orderId;
+      $(document).ready(function () {
+        var settings = {
+          "url": "/create/orderId",
+          "method": "POST",
+          "timeout": 0,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "data": JSON.stringify({
+            "amount": amountToPay * 100
+          }),
+        };
+        ;
+
+        $.ajax(settings).done(function (response) {
+
+          orderId = response.orderId;
+          console.log(orderId);
+          $("button").show();
+        });
+      });
+
+
+    }
+    else if (pay.value === 'Wallet') {
+      console.log("coooococococococ");
+      try {
+        const response = await fetch('/wallettransaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            amount: amountToPay
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          Swal.fire({
+        text: 'Your Order Has Been Placed',
+        icon: 'Success',
+        confirmButtonText: 'OK',
+        customClass: {
+          title: 'text-danger',
+          popup: 'swal2-popup-custom',
+          confirmButton: 'btn btn-danger'
+        },
+        showCancelButton: false,
+        showCloseButton: true,
+        showLoaderOnConfirm: false,
+        timer: 3000
+      });
+          console.log(pay.value, "000000");
+          document.getElementById('orderForm').action = '/placeOrder';
+          document.getElementById('orderForm').method = 'post';
+          document.getElementById('orderForm').submit();
+        } else {
+          console.log("cccc");
+          Swal.fire({
+            text: "You Don't have Enough money in Wallet",
+            icon: 'error',
+            confirmButtonText: 'OK',
+            customClass: {
+              title: 'text-danger',
+              popup: 'swal2-popup-custom',
+              confirmButton: 'btn btn-danger'
+            },
+            showCancelButton: false,
+            showCloseButton: true,
+            showLoaderOnConfirm: false,
+            timer: 3000
+          });
+          console.log("came else but....");
         }
+      } catch (error) {
+        console.error("An error occurred during wallet transaction:", error);
+        // Handle the error as needed
+      }
     }
+    else {
+      Swal.fire({
+        text: 'Your Order Has Been Placed',
+        icon: 'Success',
+        confirmButtonText: 'OK',
+        customClass: {
+          title: 'text-danger',
+          popup: 'swal2-popup-custom',
+          confirmButton: 'btn btn-danger'
+        },
+        showCancelButton: false,
+        showCloseButton: true,
+        showLoaderOnConfirm: false,
+        timer: 3000
+      });
+      console.log("jwDQJWD");
+      document.getElementById('orderForm').action = '/placeOrder';
+      document.getElementById('orderForm').method = 'post'; // Replace with your actual URL
 
-    function updateHiddenField(selectedOption) {
-        document.getElementById('selectedPaymentOption').value =selectedOption.value
+      // Submit the form
+      document.getElementById('orderForm').submit();
+
     }
+  }
+
 </script>
 
 

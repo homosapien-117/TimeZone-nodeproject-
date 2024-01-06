@@ -6,8 +6,10 @@ const productModel=require('../models/product_model')
 const walletModel=require('../models/wallet_model')
 const favModel=require('../models/favouriteModel')
 const couponModel=require('../models/coupon_model')
-
-
+const {
+  passwordValid,
+} = require("../../utils/validators/signup_validators");
+const bcrypt =require('bcrypt')
 
 const userdetails = async (req, res) => {
     try {
@@ -240,6 +242,46 @@ const userdetails = async (req, res) => {
       );
       console.log("ithaahnu data", data);
       res.redirect("/userdetails");
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  };
+
+  const changepassword = async (req, res) => {
+    try {
+      const userid = req.session.userId;
+      const password = req.body.newPassword;
+      const newpassword = req.body.confirmPassword;
+      const ispasswordvalid = passwordValid(newpassword);
+      // const isconfirmpasswordvallid=confirmpasswordValid(cpassword,password)
+      const categories = await catModel.find();
+      const user = await userModel.findById(userid);
+      const passwordmatch = await bcrypt.compare(password, user.password);
+      if (passwordmatch) {
+        if (!ispasswordvalid) {
+          console.log("passwor not valid");
+          res.render("users/userdetails", {
+            perror: "passworld have (A,a,@)",
+            categories: categories,
+            userData: user,
+          });
+        }
+        else {
+          const newhashedpassword = await bcrypt.hash(newpassword, 10);
+          await userModel.updateOne(
+            { _id: userid },
+            { password: newhashedpassword }
+          );
+          res.redirect("/userdetails");
+        }
+      } else {
+        res.render("users/userdetails", {
+          perror: "old password is incorrect",
+          categories: categories,
+          userData: user,
+        });
+      }
     } catch (error) {
       console.log(error);
       res.send(error);
@@ -613,6 +655,7 @@ const userdetails = async (req, res) => {
     updateAddress,
     editaddress,
     deleteAddress,
+    changepassword,
     editaddressupdate,
     orderhistory,
     singleOrderPage,

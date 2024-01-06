@@ -101,42 +101,65 @@
         <!-- Header End -->
     </header>
 
-    <div style="text-align: center;">
-        <section class="user-details-section mt-4 section-container">
-          <div style="display: inline-block; text-align: center; margin-left: 32%;">
-            <h1>Wallet&nbsp;:&nbsp;</h4>
-              <h1 style="display: inline-block; font-size: 50px;text-align: center;"><span>Rs.&nbsp;</span><span style="font-weight: bolder;"><%= userWallet %></span></h1>
+    <div class="hero">
+        <div class="container">
+          <div class="row justify-content-between">
+            <div class="col-lg-5">
+              <div class="intro-excerpt">
+                <h1 class="heroo">TimeZone-Wallet</h1>
+               
+              </div>
+              <form id="orderForm" style="font-family: 'Arial', sans-serif;">
+                <input type="number" id="Amount" name="Amount" style="border: 1px solid #ccc; padding: 8px; font-weight: bold; margin-right: 10px;">
+                <button onclick="RazorpayWallet(event)" style="background-color: #fff; color: #333; border: 1px solid #ccc; padding: 10px; font-weight: bold; cursor: pointer;">Add To Wallet</button>
+            </form>
+            
+            </div>
+            <div class="col-lg-7">
+              <!-- ... (additional content if needed) ... -->
+            </div>
           </div>
-          
-   
-        </section>
+        </div>
       </div>
-  
-        <section  class="user-details-section mt-4 section-container">
-            <h1 style="text-align: center;">Wallet history&nbsp;</h1>
-              <table class="responsive-table">
-                <thead>
-                  <tr>
-                    <th style="text-align: center;">Date</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% usertransactions.forEach(function(transaction) { %>
+      <!-- End Hero Section -->
+    
+      
+        <div style="text-align: center;">
+          <section class="user-details-section mt-4 section-container">
+            <div style="display: inline-block; text-align: center; margin-left: 32%;">
+              <h1>Wallet&nbsp;:&nbsp;</h4>
+                <h1 style="display: inline-block; font-size: 50px;text-align: center;"><span>Rs.&nbsp;</span><span style="font-weight: bolder;"><%= userWallet %></span></h1>
+            </div>
+            
+     
+          </section>
+        </div>
+    
+          <section  class="user-details-section mt-4 section-container">
+              <h1 style="text-align: center;">Wallet history&nbsp;</h1>
+                <table class="responsive-table">
+                  <thead>
                     <tr>
-                      <td style="text-align: center;"><%= transaction.date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %></td>
-                      <td class="<%= transaction.type === 'Credited' ? 'credited' : 'debited' %>"><%= transaction.type %></td>
-                      <td class="<%= transaction.type === 'Credited' ? 'credited' : 'debited' %>"><%= transaction.type === 'Credited' ? '+' : '-' %><%= transaction.amount %></td>
+                      <th style="text-align: center;">Date</th>
+                      <th>Reason</th>
+                      <th>Type</th>
+                      <th>Amount</th>
                     </tr>
-                  <% }); %>
-                </tbody>
-              </table>
-          
-        </section>
-
-
-
+                  </thead>
+                  <tbody>
+                    <% usertransactions.forEach(function(transaction) { %>
+                      <tr>
+                        <td style="text-align: center;"><%= transaction.date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %></td>
+                        <td class="<%= transaction.type === 'Credited' ? 'credited' : 'debited' %>"><%= transaction.reason %></td>
+                        <td class="<%= transaction.type === 'Credited' ? 'credited' : 'debited' %>"><%= transaction.type %></td>
+                        <td class="<%= transaction.type === 'Credited' ? 'credited' : 'debited' %>"><%= transaction.type === 'Credited' ? '+' : '-' %><%= transaction.amount %></td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+            
+          </section>
+        
 
 
     <footer>
@@ -235,6 +258,9 @@
     </div>
     <!-- Search model end -->
 
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <script>
         async function  RazorpayWallet()
         {
@@ -260,19 +286,20 @@
     
             }
             
+            
+            
             else {
     console.log("upi total","ppppppp");
     
     var options = {
-    "key": 'rzp_test_tY3tynQ51qUYZR', // Enter the Key ID generated from the Dashboard
+    "key": 'rzp_test_2dpUf4O8fP4gpf', // Enter the Key ID generated from the Dashboard
     "amount":  amountToPay*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
     "currency": "INR",
-    "name": "village",
+    "name": "Timezone",
     "description": "Test Transaction",
     "image": "Urban Sole",
     "order_id": orderId, //This is a sample Order ID. Pass the id obtained in the response of Step 1
     "handler": function (response){
-    alert(response.razorpay_payment_id);
     document.getElementById('orderForm').action = '/walletTopup';
     document.getElementById('orderForm').method = 'post'; // Replace with your actual URL
     
@@ -289,12 +316,6 @@
     var rzp1 = new Razorpay(options);
     rzp1.on('payment.failed', function (response){
             alert(response.error.code);
-            alert(response.error.description);
-            alert(response.error.source);
-            alert(response.error.step);
-            alert(response.error.reason);
-            alert(response.error.metadata.order_id);
-            alert(response.error.metadata.payment_id);
     });
         rzp1.open();
     
@@ -330,7 +351,7 @@
             }
     
       </script>
-
+      
     <!-- JS here -->
 
     <script src="./user_assets/js/vendor/modernizr-3.5.0.min.js"></script>

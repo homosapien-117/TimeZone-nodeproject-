@@ -90,6 +90,7 @@ const deleteproduct = async (req, res) => {
 // product image editing 
 const editing = async (req, res) => {
   try {
+    const category = await categoryModel.find({});
     const id = req.params.id;
     const product = await productModel.findById(id);
     res.render("admin/editimg", { product: product });
@@ -149,10 +150,11 @@ const updateimg = async (req, res) => {
 // product update page 
 const updatepro = async (req, res) => {
   try {
+    const categories = await categoryModel.find({});
     const id = req.params.id;
     const product = await productModel.findById(id);
     console.log(product);
-    res.render("admin/updateproduct", { product: product });
+    res.render("admin/updateproduct", { product: product ,category: categories});
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -163,12 +165,13 @@ const updatepro = async (req, res) => {
 const updateproduct = async (req, res) => {
   try {
     const id = req.params.id;
-    const { productName, stock, productprice, description } = req.body;
+    const { productName, stock,parentCategory, productprice, description } = req.body;
     const product = await productModel.findOne({ _id: id });
     product.name = productName;
     product.price = productprice;
     product.stock = stock;
     product.description = description;
+    product.category=parentCategory;
     await product.save();
     res.redirect("/admin/product");
   } catch (error) {

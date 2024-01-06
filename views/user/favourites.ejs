@@ -127,9 +127,13 @@
                               <h2 class="h5 text-black"><%= item.productId.name %></h2>
                             </td>
                             <td><%= item.productId.price %></td>
-                             <td><a href="/addtocartviafav/<%= item.productId._id%>" class="add-to-cart-button">Add To Cart</a></td>
+                             <td> 
+                                <button style="background-color: #ff2020; border-color:transparent;"><a href="/addtocartviafav/<%= item.productId._id%>" class="add-to-cart-button" style="color:white;">Add To Cart</a></button>
+                            </td>
     
-            <td><a href="/deletefav/<%= item._id %>" class="remove-from-cart-button">Remove</a></td>
+            <td>
+                <button style="background-color: #ff2020; border-color:transparent;"><a href="/deletefav/<%= item._id %>" class="remove-from-cart-button" style="color:white;">Remove</a></button>
+            </td>
     
                           </tr>
                         <% }); %>

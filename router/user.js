@@ -34,7 +34,7 @@ usrouter.get("/orderhistory",loged,profilecontroller.orderhistory)
 usrouter.get("/singleorder/:id",loged,profilecontroller.singleOrderPage)
 usrouter.get("/cancelorder/:id",loged,profilecontroller.ordercancelling)
 usrouter.get('/returnorder/:id',loged,profilecontroller.orderReturn)
-
+usrouter.post("/cp",loged,profilecontroller.changepassword)
 
 
 //cart
@@ -83,6 +83,9 @@ usrouter.post('/walletTopup',loged,profilecontroller.walletTopup)
 usrouter.get("/Rewards",loged,profilecontroller.couponsAndRewards)
 usrouter.post("/applyCoupon",loged,checkoutcontroller.applyCoupon)
 usrouter.post("/revokeCoupon",loged,checkoutcontroller.recokeCoupon)
+
+// banner
+usrouter.get("/bannerURL",uscontroller.bannerURL)
 
 //logout
 usrouter.get('/logout',logedtohome,uscontroller.logout)

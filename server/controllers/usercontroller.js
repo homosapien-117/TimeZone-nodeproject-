@@ -9,7 +9,7 @@ const otpModel=require('../models/otpmodel')
 const { Email, pass } = require('dotenv').config({path: '../.env'})
 const catModel=require('../models/category_model')
 const productModel=require('../models/product_model')
-
+const bannerModel=require('../models/banner_model')
 
 const {
   emailValid,
@@ -67,15 +67,46 @@ const sendmail = async (email, otp) => {
 //index page
 const index = async (req, res) => {
   try {
-    const categories = await catModel.find();
+    const [categories, banners] = await Promise.all([
+      catModel.find(),
+      bannerModel.find(),
+    ]);
+
     console.log(categories);
-    res.render("user/index", { categories });
+    console.log(banners);
+
+    res.render("user/index", { categories, banners });
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    res.status(500).send("Internal Server Error");
+    console.error("Error fetching data:", error);
+    res.render('users/serverError')
   }
 };
 
+const bannerURL = async (req, res) => {
+  try {
+    const bannerId = req.query.id;
+    const banner = await bannerModel.findOne({ _id: bannerId });
+    console.log("ithhahnu mwoney", banner.bannerlink);
+    if (banner.label == "category") {
+      const categoryId = new mongoose.Types.ObjectId(banner.bannerlink);
+      const category = await catModel.findOne({ _id: categoryId });
+      res.redirect(`/shop/?category=${categoryId}`);
+    } else if (banner.label == "product") {
+      const productId = new mongoose.Types.ObjectId(banner.bannerlink);
+      const product = await productModel.findOne({ _id: productId });
+      res.redirect(`/singleproduct/${productId}`);
+    } else if (banner.label == "coupon") {
+      const couponId = new mongoose.Types.ObjectId(banner.bannerlink);
+      const coupon = await couponModel.findOne({ _id: couponId });
+      res.redirect("/Rewards");
+    } else {
+      res.redirect("/");
+    }
+  } catch (err) {
+    console.log(err);
+    res.render('users/serverError')
+  }
+};
 //shop page
 const shop = async (req, res) => {
   try {
@@ -620,5 +651,6 @@ module.exports={
     singleproduct,
     searchProducts,
     filterProducts,
-    sortProducts
+    sortProducts,
+    bannerURL
 }

@@ -138,6 +138,37 @@
                             </div>
                         </div>
                     </section>
+                    <section id="passwordSection" class="user-details-section mt-4 section-container">
+                        <div class="section-half">
+                            <h4>Password</h4>
+                            <!-- Password management -->
+                            <p>Email: <%= userData.email %></p>
+                            <p>Password: ********</p>
+                            <br><br>
+                
+                            <button id="changePasswordLink" type="button" class="btn btn-warning" onclick="togglePasswordForm()">Change Password</button>
+            <br><br>
+        
+            <!-- Password change form -->
+            <form action="/cp" method="post" id="passwordForm" class="passwordForm">
+              <label for="newPassword">Old Password </label> <br>
+              <input type="password" id="newPassword" name="newPassword" required>
+              <% if(locals.perror){ %>
+              <div class="alter text-danger text-start"><%= perror %></div>
+              <% } %>
+              <br>
+              <label for="confirmPassword">New Password</label> <br>
+              <input type="password" id="confirmPassword" name="confirmPassword" required>
+              <% if(locals.cperror){ %>
+              <div class="alter text-danger text-start"><%= cperror %></div>
+              <% } %>
+        
+              <br><br>
+        
+              <button type="submit" class="btn btn-warning">Submit</button>
+            </form>
+                        </div>
+                    </section>
                 </div>
         
                 <div class="col-lg-6">
@@ -168,34 +199,7 @@
                 </div>
             </div>
         
-            <section id="passwordSection" class="user-details-section mt-4 section-container">
-                <div class="section-half">
-                    <h4>Password</h4>
-                    <!-- Password management -->
-                    <p>Email: <%= userData.email %></p>
-                    <p>Password: ********</p>
-                    <br><br>
-        
-                    <!-- Password change form -->
-                    <form action="/cp" method="post" id="passwordForm" class="passwordForm">
-                        <label for="oldPassword">Enter old Password:</label>
-                        <input type="password" id="oldPassword" name="oldPassword" required>
-                        <% if(locals.perror){ %>
-                            <div class="alter text-danger text-start"><%= perror %></div>
-                        <% } %>
-        
-                        <label for="newPassword">New Password:</label>
-                        <input type="password" id="newPassword" name="newPassword" required>
-                        <% if(locals.cperror){ %>
-                            <div class="alter text-danger text-start"><%= cperror %></div>
-                        <% } %>
-        
-                        <br><br>
-        
-                        <button type="submit" class="btn btn-warning">Submit</button>
-                    </form>
-                </div>
-            </section>
+           
         </div>
         
 
@@ -305,6 +309,12 @@
             }
         }
     </script>
+      <script>
+        function togglePasswordForm() {
+          var passwordForm = document.getElementById('passwordForm');
+          passwordForm.style.display = (passwordForm.style.display === 'block') ? 'none' : 'block';
+        }
+      </script>
     <script src="./user_assets/js/vendor/modernizr-3.5.0.min.js"></script>
     <!-- Jquery, Popper, Bootstrap -->
     <script src="./user_assets/js/vendor/jquery-1.12.4.min.js"></script>
