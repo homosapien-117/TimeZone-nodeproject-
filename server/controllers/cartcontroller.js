@@ -210,7 +210,7 @@ const checkoutpage = async (req, res) => {
           const nonitemid= cartItem.productId
           const theitem=await productModel.findOne({_id:nonitemid})
           const nameitem = theitem.name
-          return res.render('users/cart',{cart,categories,message:` The product ${nameitem}'s quantity Exceeds StockLimit..!!`})
+          return res.render('user/cart',{cart,categories,message:` The product ${nameitem}'s quantity Exceeds StockLimit..!!`})
         
         }
         

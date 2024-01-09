@@ -128,15 +128,14 @@ const shop = async (req, res) => {
 //searchproduct
 const searchProducts = async (req, res) => {
   try {
-  const searchProduct = req.body.searchProducts;
+    const searchProduct = req.body.searchProducts;
 
-  
     const data = await catModel.findOne({
-      name: { $regex: new RegExp(`^${searchProduct}`, 'i') },
+      name: { $regex: new RegExp(`^${searchProduct}`, "i") },
     });
 
-    const productdata=await productModel.findOne({
-      name:{$regex: new RegExp(`^${searchProduct}`, 'i')}
+    const productdata = await productModel.findOne({
+      name: { $regex: new RegExp(`^${searchProduct}`, "i") },
     });
 
     const result = await catModel.aggregate([
@@ -144,162 +143,171 @@ const searchProducts = async (req, res) => {
         $match: {
           types: {
             $elemMatch: {
-              $regex: new RegExp(`^${searchProduct}`, 'i')
-            }
-          }
-        }
+              $regex: new RegExp(`^${searchProduct}`, "i"),
+            },
+          },
+        },
       },
       {
-        $unwind: "$types"
+        $unwind: "$types",
       },
       {
         $match: {
-          "types": {
-            $regex: new RegExp(`^${searchProduct}`, 'i')
-          }
-        }
+          types: {
+            $regex: new RegExp(`^${searchProduct}`, "i"),
+          },
+        },
       },
       {
         $project: {
           _id: 0,
           categoryName: "$name", // Add other fields as needed
-          matchingType: "$types"
-        }
-      }
+          matchingType: "$types",
+        },
+      },
     ]);
-    console.log("nskbvbnsc ",result);
-    if (data){
-      const categoryId=data._id
-      return res.redirect(`/shop?category=${categoryId}`)
-    }
-    else if (result.length!==0) {
-      const categoryData=result[0].matchingType
-      const foundCategory = await catModel.findOne({
-          types: {
-            $in: [categoryData]
-          }
-        });
-    
-      res.redirect(`/filterProducts?category=${foundCategory._id}&filterType=${categoryData}`);
+    console.log("nskbvbnsc ", result);
 
+    if (data) {
+      const categoryId = data._id;
+      return res.redirect(`/shop?category=${categoryId}`);
+    } else if (result.length !== 0) {
+      const categoryData = result[0].matchingType;
+      const foundCategory = await catModel.findOne({
+        types: {
+          $in: [categoryData],
+        },
+      });
+
+      res.redirect(
+        `/filterProducts?category=${foundCategory._id}&filterType=${categoryData}`
+      );
+    } else if (productdata) {
+      const productId = productdata._id;
+      return res.redirect(`/singleproduct/${productId}`);
+    } else {
+      res.redirect("/");
     }
-    
-    else if(productdata){
-      const productId=productdata._id
-      return res.redirect(`/singleproduct/${productId}`)
-    }
-    else{
-      res.redirect('/')
-    }
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err);
 
     // Sending a more informative error response
-    res.status(500).json({ error: 'Internal Server Error', message: err.message });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", message: err.message });
   }
 };
 
-
-//filter
-const filterProducts=async(req,res)=>{
+const filterProducts = async (req, res) => {
   try {
-    const category=req.query.category;
-    const selectedType=req.query.filterType;
-    const sortOption=req.query.sortOption;
-    
+    const category = req.query.category;
+    const selectedType = req.query.filterType;
+    const sortOption = req.query.sortOption;
+
     let products;
 
-    const filterConditions={
-      category:category,
-      status:true,
+    const filterConditions = {
+      category: category,
+      status: true,
+    };
+    if (selectedType && selectedType !== "All") {
+      filterConditions.type = selectedType;
     }
-    if(selectedType&&selectedType !=='All')
-    {
-      filterConditions.type=selectedType;
-    }
-    if(sortOption==='-1')
-    {
-      products=await productModel.find(filterConditions).sort({price:-1}).exec();
-
-    }else if(sortOption==='1')
-    {
-      products=await productModel.find(filterConditions).sort({price:1}).exec();
-    }else{
+    if (sortOption === "-1") {
+      products = await productModel
+        .find(filterConditions)
+        .sort({ price: -1 })
+        .exec();
+    } else if (sortOption === "1") {
+      products = await productModel
+        .find(filterConditions)
+        .sort({ price: 1 })
+        .exec();
+    } else {
       products = await productModel.find(filterConditions).exec();
-
     }
     const categories = await catModel.find();
-        const ctCategory = categories.find(cat => cat._id.toString() === category);
-        const categoryName = ctCategory ? ctCategory.name : null;
-        const theCategory = await catModel.find({ _id: category });
+    const ctCategory = categories.find(
+      (cat) => cat._id.toString() === category
+    );
+    const categoryName = ctCategory ? ctCategory.name : null;
+    const theCategory = await catModel.find({ _id: category });
 
-        res.render("user/shop", {
-            selectedType,
-            theCategory,
-            categoryName,
-            categories,
-            products,
-            selectedCategory: category,
-            sorting: getSortingLabel(sortOption), // Pass the sorting label to the view
-        });
+    res.render("user/shop", {
+      selectedType,
+      theCategory,
+      categoryName,
+      categories,
+      products,
+      selectedCategory: category,
+      sorting: getSortingLabel(sortOption), // Pass the sorting label to the view
+    });
 
-        console.log("ipooooo", theCategory);
+    console.log("ipooooo", theCategory);
   } catch (error) {
     console.log(error);
     res.status(500).send("error occured");
   }
-}
+};
 
 function getSortingLabel(sortOption) {
-  if (sortOption === '-1') {
-      return 'Price: High To Low';
-  } else if (sortOption === '1') {
-      return 'Price: Low To High';
+  if (sortOption === "-1") {
+    return "Price: High To Low";
+  } else if (sortOption === "1") {
+    return "Price: Low To High";
   } else {
-      return 'Default Sorting'; // Add more labels based on your sorting options
+    return "Default Sorting"; // Add more labels based on your sorting options
   }
 }
 
-const sortProducts=async(req,res)=>{
+const sortProducts = async (req, res) => {
   try {
-    const sortOption = parseInt(req.query.sortPro, 10);    
-    const selectedType=req.query.type
-    const category=req.query.category
+    const sortOption = parseInt(req.query.sortPro, 10);
+    const selectedType = req.query.type;
+    const category = req.query.category;
 
     let products;
     console.log(sortOption);
 
-    if(selectedType=='All')
-    {
-      products=await productModel.find({$and:[{category:category},{status:true}]}).sort({price:sortOption}).exec()
-
-    }
-    else{
-      products=await productModel.find({$and:[{category:category},{status:true}]}).sort({price:sortOption}).exec()
-        
-      
+    if (selectedType == "All") {
+      products = await productModel
+        .find({ $and: [{ category: category }, { status: true }] })
+        .sort({ price: sortOption })
+        .exec();
+    } else {
+      products = await productModel
+        .find({ $and: [{ category: category }, { status: true }] })
+        .sort({ price: sortOption })
+        .exec();
     }
     let sorting;
-    if(sortOption==='-1'){
-      sorting="Price: High To Low"
+    if (sortOption === "-1") {
+      sorting = "Price: High To Low";
+    } else if (sortOption == "1") {
+      sorting = "Price: Low To High";
     }
-    else if(sortOption=='1'){
-      sorting="Price: Low To High"
-    }
-    console.log("propro",products);
-    const categories=await catModel.find();
-    const ctCategory=categories.find(cat=>cat.id.toString()===category)
-    const categoryName =ctCategory ? ctCategory.name : null;
-    const theCategory = await catModel.find({_id:category})
-    res.render("user/shop", {selectedType,theCategory, categoryName,categories,products:products,sortoption:sortOption, selectedCategory: category ,sorting});
-    console.log("ipoppop",theCategory);
-
+    console.log("propro", products);
+    const categories = await catModel.find();
+    const ctCategory = categories.find((cat) => cat.id.toString() === category);
+    const categoryName = ctCategory ? ctCategory.name : null;
+    const theCategory = await catModel.find({ _id: category });
+    res.render("user/shop", {
+      selectedType,
+      theCategory,
+      categoryName,
+      categories,
+      products: products,
+      sortoption: sortOption,
+      selectedCategory: category,
+      sorting,
+    });
+    console.log("ipoppop", theCategory);
   } catch (error) {
     console.log(error);
-    res.send(error)
+    res.send(error);
   }
-}
+};
+
 
 //login page
 const login=(req,res)=>{

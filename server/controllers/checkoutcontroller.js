@@ -11,14 +11,21 @@ const couponModel=require('../models/coupon_model')
 const Razorpay=require("razorpay")
 const KEY_ID='rzp_test_PSAnCXtUPXVgWO';
 const key_secret='6lQXlklpxd83A1tDcJuMCznM';
+const ShortUniqueId= require('short-unique-id');
+const moment = require("moment");
+let date = moment();
 
 
 const checkoutreload=async(req,res)=>{
     try {
-        const{saveas,fullname,adname,street,pincode,city,state,country,phone}=req.body;
-        const userId=req.session.userId
-        console.log("userid",req.session.userId);
-
+      const userId=req.session.userId
+      const{saveas,fullname,adname,street,pincode,city,state,country,phone}=req.body;
+      console.log("userid",req.session.userId);
+      const user = await userModel.findById(userId);
+      const availableCoupons = await couponModel.find({
+        couponCode: { $nin: user.usedCoupons },
+        status:true
+      });
         const existingUser=await userModel.findOne({_id:userId})
         console.log("exixteing user",existingUser);
 
@@ -68,7 +75,7 @@ const checkoutreload=async(req,res)=>{
                 }));
 
                 console.log("cart total", cartItems);
-                return res.render("user/checkout", { addresses, cartItems, categories, cart, addressExistsWarning: true });
+                return res.render("user/checkout", { availableCoupons,addresses, cartItems, categories, cart, addressExistsWarning: true });
             }
 
             console.log("its user", existingAddress);
@@ -113,7 +120,7 @@ const checkoutreload=async(req,res)=>{
 
         }))
         console.log("cart total",cartItems);
-        res.render("user/checkout",{addresses,cartItems,categories,cart})
+        res.render("user/checkout",{availableCoupons,addresses,cartItems,categories,cart})
     } catch (error) {
         console.log(error);
         res.send(error)
@@ -122,66 +129,76 @@ const checkoutreload=async(req,res)=>{
 
 
 const placeorder = async (req, res) => {
-    try {
-      const categories = await catModel.find({});
-      const addressId = req.body.selectedAddressId;
-      const user = await userModel.findOne({
-        address: { $elemMatch: { _id: addressId } },
-      });
-      if (!user) {
-        return res.status(404).send("user not found");
-      }
-      const selectedAddress = user.address.find((address) =>
-        address._id.equals(addressId)
-      );
-      const userId = req.session.userId;
-      const username = selectedAddress.fullname;
-      const paymentMethod = req.body.selectedPaymentOption;
-  
-      const items = req.body.selectedProductNames.map((productName, index) => ({
-        productName: req.body.selectedProductNames[index],
-        productId: new mongoose.Types.ObjectId(
-          req.body.selectedProductIds[index]
-        ),
-        quantity: parseInt(req.body.selectedQuantities[index]),
-        price: parseInt(req.body.selectedCartTotals[index]),
-      }));
-      const order = new orderModel({
-        orderId: shortid.generate(),
-        userId: userId,
-        userName: username,
-        items: items,
-        totalPrice: parseInt(req.body.carttotal),
-        shippingAddress: selectedAddress,
-        paymentMethod: paymentMethod,
-        updatedAt: date.format("YYYY-MM-DD HH:mm"),
-        createdAt: date.format("YYYY-MM-DD HH:mm"),
-        status: "pending",
-      });
-  
-      console.log("items", items);
-      await order.save();
-  
-      for (const item of items) {
-        await cartModel.updateOne(
-          { userId: userId },
-          { $pull: { item: { productId: item.productId } } }
-        );
-        await cartModel.updateOne({ userId: userId }, { $set: { total: 0 } });
-      }
-  
-      for (const item of items) {
-        await productModel.updateOne(
-          { _id: item.productId },
-          { $inc: { stock: -item.quantity } }
-        );
-      }
-      res.render("users/order_confirmation", { order, categories });
-    } catch (error) {
-      console.log(error);
-      res.send(error);
+  try {
+    const categories = await catModel.find({});
+    const addressId = req.body.selectedAddressId;
+    const user = await userModel.findOne({
+      address: { $elemMatch: { _id: addressId } },
+    });
+    if (!user) {
+      return res.status(404).send("user not found");
     }
-  };
+    const selectedAddress = user.address.find((address) =>
+      address._id.equals(addressId)
+    );
+    const userId = req.session.userId;
+    const username = selectedAddress.fullname;
+    const paymentMethod = req.body.selectedPaymentOption;
+    const selectedProductNames = req.body.selectedProductNames;
+
+if (!selectedProductNames || !Array.isArray(selectedProductNames)) {
+  return res.status(400).send('selectedProductNames is missing or not an array.');
+}
+
+    const items = req.body.selectedProductNames.map((productName, index) => ({
+      productName: req.body.selectedProductNames[index],
+      productId: new mongoose.Types.ObjectId(
+        req.body.selectedProductIds[index]
+      ),
+      quantity: parseInt(req.body.selectedQuantities[index]),
+      price: parseInt(req.body.selectedCartTotals[index]),
+    }));
+    const uid = new ShortUniqueId();
+
+const order = new orderModel({
+  orderId: uid.randomUUID(6),
+  userId: userId,
+  userName: username,
+  items: items,
+  totalPrice: parseInt(req.body.carttotal),
+  shippingAddress: selectedAddress,
+  paymentMethod: paymentMethod,
+  updatedAt: date.format("YYYY-MM-DD HH:mm"),
+  createdAt: date.format("YYYY-MM-DD HH:mm"),
+  status: "pending",
+});
+
+    console.log("items", items);
+    await order.save();
+
+    for (const item of items) {
+      await cartModel.updateOne(
+        { userId: userId },
+        { $pull: { item: { productId: item.productId } } }
+      );
+      await cartModel.updateOne({ userId: userId }, { $set: { total: 0 } });
+    }
+
+    for (const item of items) {
+      await productModel.updateOne(
+        { _id: item.productId },
+        { $inc: { stock: -item.quantity } }
+      );
+    }
+    req.session.checkout=false
+
+    res.render("user/orderconfirmation", { order, categories });
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+};
+
   const instance = new Razorpay({ key_id: KEY_ID, key_secret: key_secret });
   const upi = async (req, res) => {
     console.log("body:", req.body);
@@ -193,7 +210,8 @@ const placeorder = async (req, res) => {
     instance.orders.create(options, function (err, order) {
       console.log("order1 :", order);
       res.send({ orderId: order.id });
-    });
+  });
+  
   };
 
 const wallettransaction=async(req,res)=>{
@@ -221,7 +239,7 @@ const wallettransaction=async(req,res)=>{
         }
         else
         {
-            res.json({success:false,message:'dont have enought money'})
+            res.json({success:false,message:'dont have enough money'})
         }
     } catch (error) {
         console.log(error);
@@ -325,5 +343,6 @@ module.exports={
     checkoutreload,
     wallettransaction,
     applyCoupon,
-    recokeCoupon
+    recokeCoupon,
+    upi
 }

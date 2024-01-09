@@ -86,7 +86,7 @@
           </div>
                                 </li>
                                 <li> <a href="/profile"><span class="flaticon-user"></span></a></li>
-                                <li><a href="wishlist.html"> <span class="flaticon-heart"></span></a> </li>
+                                <li><a href="/favouritespage"> <span class="flaticon-heart"></span></a> </li>
                                 <li><a href="/cartpage"><span class="flaticon-shopping-cart"></span></a> </li>
                             </ul>
                         </div>
@@ -617,6 +617,7 @@ function couponApply() {
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 
+
 <script>
   async function razorpay() {
     let amountToPay = document.getElementById('cartotal').innerText
@@ -664,29 +665,16 @@ function couponApply() {
       console.log("upi total", "ppppppp");
 
       var options = {
-        "key": 'rzp_test_2dpUf4O8fP4gpf',
-        "amount": amountToPay * 100,
-        "name": "village",
-        "description": "Test Transaction",
-        "image": "Village",
-        "order_id": orderId,
-        "handler": function (response) {
-          Swal.fire({
-        text: 'Your Order Has Been Placed',
-        icon: 'Success',
-        confirmButtonText: 'OK',
-        customClass: {
-          title: 'text-danger',
-          popup: 'swal2-popup-custom',
-          confirmButton: 'btn btn-danger'
-        },
-        showCancelButton: false,
-        showCloseButton: true,
-        showLoaderOnConfirm: false,
-        timer: 3000
-      });
-          document.getElementById('orderForm').action = '/placeOrder';
-          document.getElementById('orderForm').method = 'post';
+      "key": 'rzp_test_PSAnCXtUPXVgWO', 
+      "amount":  amountToPay*100, 
+      "name": "Timezone",
+      "description": "Test Transaction",
+      "image": "Timezone",
+      "order_id": orderId, 
+      "handler": function (response){
+      alert(response.razorpay_payment_id);
+      document.getElementById('orderForm').action = '/placeOrder';
+      document.getElementById('orderForm').method = 'post';
 
           // Submit the form
           document.getElementById('orderForm').submit();
@@ -701,8 +689,14 @@ function couponApply() {
       var rzp1 = new Razorpay(options);
       rzp1.on('payment.failed', function (response) {
         alert(response.error.code);
+        alert(response.error.description);
+            alert(response.error.source);
+            alert(response.error.step);
+            alert(response.error.reason);
+            alert(response.error.metadata.order_id);
+            alert(response.error.metadata.payment_id);
+});
         
-      });
       rzp1.open();
 
 
@@ -735,88 +729,102 @@ function couponApply() {
 
     }
     else if (pay.value === 'Wallet') {
-      console.log("coooococococococ");
-      try {
-        const response = await fetch('/wallettransaction', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            amount: amountToPay
-          })
-        });
+						console.log("coooococococococ");
+						try {
+							const response = await fetch('/wallettransaction', {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json'
+								},
+								body: JSON.stringify({
+									amount: amountToPay
+								})
+							});
 
-        const data = await response.json();
-        if (data.success) {
-          Swal.fire({
-        text: 'Your Order Has Been Placed',
-        icon: 'Success',
-        confirmButtonText: 'OK',
-        customClass: {
-          title: 'text-danger',
-          popup: 'swal2-popup-custom',
-          confirmButton: 'btn btn-danger'
-        },
-        showCancelButton: false,
-        showCloseButton: true,
-        showLoaderOnConfirm: false,
-        timer: 3000
-      });
-          console.log(pay.value, "000000");
-          document.getElementById('orderForm').action = '/placeOrder';
-          document.getElementById('orderForm').method = 'post';
-          document.getElementById('orderForm').submit();
-        } else {
-          console.log("cccc");
-          Swal.fire({
-            text: "You Don't have Enough money in Wallet",
-            icon: 'error',
-            confirmButtonText: 'OK',
-            customClass: {
-              title: 'text-danger',
-              popup: 'swal2-popup-custom',
-              confirmButton: 'btn btn-danger'
-            },
-            showCancelButton: false,
-            showCloseButton: true,
-            showLoaderOnConfirm: false,
-            timer: 3000
-          });
-          console.log("came else but....");
-        }
-      } catch (error) {
-        console.error("An error occurred during wallet transaction:", error);
-        // Handle the error as needed
-      }
-    }
-    else {
-      Swal.fire({
-        text: 'Your Order Has Been Placed',
-        icon: 'Success',
-        confirmButtonText: 'OK',
-        customClass: {
-          title: 'text-danger',
-          popup: 'swal2-popup-custom',
-          confirmButton: 'btn btn-danger'
-        },
-        showCancelButton: false,
-        showCloseButton: true,
-        showLoaderOnConfirm: false,
-        timer: 3000
-      });
-      console.log("jwDQJWD");
-      document.getElementById('orderForm').action = '/placeOrder';
-      document.getElementById('orderForm').method = 'post'; // Replace with your actual URL
+							const data = await response.json();
 
-      // Submit the form
-      document.getElementById('orderForm').submit();
+							if (data.success) {
+								Swal.fire({
+							text: 'Your Order Has Been Placed',
+							icon: 'Success',
+							confirmButtonText: 'OK',
+							customClass: {
+								title: 'text-danger',
+								popup: 'swal2-popup-custom',
+								confirmButton: 'btn btn-danger'
+							},
+							showCancelButton: false,
+							showCloseButton: true,
+							showLoaderOnConfirm: false,
+							timer: 3000
+						});
+								console.log(pay.value, "000000");
+								document.getElementById('orderForm').action = '/placeOrder';
+								document.getElementById('orderForm').method = 'post';
+								document.getElementById('orderForm').submit();
+							} else {
+								console.log("cccc");
+								Swal.fire({
+									text: "You Don't have Enough money in Wallet",
+									icon: 'error',
+									confirmButtonText: 'OK',
+									customClass: {
+										title: 'text-danger',
+										popup: 'swal2-popup-custom',
+										confirmButton: 'btn btn-danger'
+									},
+									showCancelButton: false,
+									showCloseButton: true,
+									showLoaderOnConfirm: false,
+									timer: 3000
+								});
+								console.log("came else but....");
+							}
+						} catch (error) {
+							console.error("An error occurred during wallet transaction:", error);
+							// Handle the error as needed
+						}
+					}
+					else {
+						Swal.fire({
+							text: 'Your Order Has Been Placed',
+							icon: 'Success',
+							confirmButtonText: 'OK',
+							customClass: {
+								title: 'text-danger',
+								popup: 'swal2-popup-custom',
+								confirmButton: 'btn btn-danger'
+							},
+							showCancelButton: false,
+							showCloseButton: true,
+							showLoaderOnConfirm: false,
+							timer: 3000
+						});
+						console.log("jwDQJWD");
+						document.getElementById('orderForm').action = '/placeOrder';
+						document.getElementById('orderForm').method = 'post'; // Replace with your actual URL
 
-    }
-  }
+						// Submit the form
+						document.getElementById('orderForm').submit();
+
+					}
+				}
 
 </script>
 
+<script>
+  $(document).ready(function () {
+    $('.address-radio').change(function () {
+      var selectedAddressId = $(this).data('address-id');
+      $('#selectedAddressId').val(selectedAddressId)
+      $('.address-details').slideUp();
+      $(this).closest('.address-item').find('.address-details').slideDown();
+    });
+  });
+  function updateHiddenField(selectedRadio) {
+  document.getElementById('selectedPaymentOption').value = selectedRadio.value;
+  }
+  </script>
 
 
 

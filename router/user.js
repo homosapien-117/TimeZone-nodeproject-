@@ -48,6 +48,8 @@ usrouter.get("/checkoutpage",loged,cartcontroller.checkoutpage)
 //checkout
 usrouter.post("/checkoutreload",loged,checkoutcontroller.checkoutreload)
 usrouter.post("/placeorder",loged,checkoutcontroller.placeorder)
+usrouter.post('/create/orderId',loged,checkoutcontroller.upi)
+usrouter.post('/wallettransaction',loged,checkoutcontroller.wallettransaction)
 
 
 //user login
