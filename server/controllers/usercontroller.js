@@ -1,48 +1,44 @@
+const bcrypt = require("bcrypt");
+const otpgenerator = require("otp-generator");
+const nodemailer = require("nodemailer");
 
-
-const bcrypt=require('bcrypt')
-const otpgenerator=require('otp-generator')
-const nodemailer=require('nodemailer')
-
-const userModel=require('../models/usermodel')
-const otpModel=require('../models/otpmodel')
-const { Email, pass } = require('dotenv').config({path: '../.env'})
-const catModel=require('../models/category_model')
-const productModel=require('../models/product_model')
-const bannerModel=require('../models/banner_model')
+const userModel = require("../models/usermodel");
+const otpModel = require("../models/otpmodel");
+const { Email, pass } = require("dotenv").config({ path: "../.env" });
+const catModel = require("../models/category_model");
+const productModel = require("../models/product_model");
+const bannerModel = require("../models/banner_model");
 
 const {
   emailValid,
   nameValid,
   phoneValid,
   passwordValid,
-  confirmpasswordValid
-  } = require ("../../utils/validators/signup_validators");
+  confirmpasswordValid,
+} = require("../../utils/validators/signup_validators");
 
 // usrouter.use(express.urlencoded({extended:true}))
 
-
-// otp generating function 
+// otp generating function
 const generateotp = () => {
-    const otp = otpgenerator.generate(6, {
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
-      digits: true,
-    });
-    console.log("Generated OTP:", otp);
-    return otp;
-  };
+  const otp = otpgenerator.generate(6, {
+    upperCaseAlphabets: false,
+    lowerCaseAlphabets: false,
+    specialChars: false,
+    digits: true,
+  });
+  console.log("Generated OTP:", otp);
+  return otp;
+};
 
-
-// otp email sending function 
+// otp email sending function
 const sendmail = async (email, otp) => {
   try {
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "ajaykrishna2000117@gmail.com", 
-        pass: "lydw qgzv dxkb kkwt" 
+        user: "ajaykrishna2000117@gmail.com",
+        pass: "lydw qgzv dxkb kkwt",
       },
     });
 
@@ -60,10 +56,6 @@ const sendmail = async (email, otp) => {
   }
 };
 
-
-
-
-
 //index page
 const index = async (req, res) => {
   try {
@@ -75,10 +67,70 @@ const index = async (req, res) => {
     console.log(categories);
     console.log(banners);
 
-    res.render("user/index", { categories, banners });
+    const limit = 6;
+    let page = parseInt(req.body.currentPage) || 1;
+    const action = req.body.action;
+    const prodCount = await productModel.countDocuments();
+    const totalPages = Math.ceil(prodCount / limit);
+    console.log("total pages:",totalPages);
+    
+    if (action) {
+      page += action;
+    }
+
+    const skip = (page - 1) * limit;
+    const from = skip + 1;
+    const to = Math.min(skip + limit, prodCount);
+    const products = await productModel.find().limit(limit).skip(skip);
+    console.log("Products:", products);
+
+    if (req.body.currentPage) {
+      return res.json({
+        currentPage: page,
+        totalPages,
+        products,
+        from,
+        to,
+        success: true,
+        totalProducts: prodCount,
+      });
+    }
+
+    res.render("user/index", {
+      categories,
+      banners,
+      products,
+      currentPage: page,
+      totalPages,
+      from,
+      to,
+    });
   } catch (error) {
     console.error("Error fetching data:", error);
-    res.render('users/serverError')
+    res.render("user/serverError");
+  }
+};
+
+
+
+const shopping = async (req, res) => {
+  try {
+    const category = req.query.category;
+    const products = await productModel.find({ status: true }).exec();
+    const categories = await catModel.find();
+    const ctCategory = categories.find(
+      (cat) => cat._id.toString() === category
+    );
+    const categoryName = ctCategory ? ctCategory.name : null;
+    res.render("user/main", {
+      categories,
+      products,
+      selectedCategory: null,
+      categoryName,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error occurred");
   }
 };
 
@@ -90,7 +142,7 @@ const bannerURL = async (req, res) => {
     if (banner.label == "category") {
       const categoryId = new mongoose.Types.ObjectId(banner.bannerlink);
       const category = await catModel.findOne({ _id: categoryId });
-      res.redirect(`/shop/?category=${categoryId}`);
+      res.redirect(`/shop?category=${categoryId}`);
     } else if (banner.label == "product") {
       const productId = new mongoose.Types.ObjectId(banner.bannerlink);
       const product = await productModel.findOne({ _id: productId });
@@ -104,26 +156,48 @@ const bannerURL = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.render('users/serverError')
+    res.render("user/serverError");
   }
 };
+
 //shop page
 const shop = async (req, res) => {
   try {
     const category = req.query.category;
-    const products = await productModel.find({$and:[{category},{status:true}] }).exec();
+    let products;
+
+    if (category) {
+      // If a category is specified, fetch products for that category
+      products = await productModel
+        .find({ $and: [{ category }, { status: true }] })
+        .exec();
+    } else {
+      // If no category is specified, fetch all products
+      products = await productModel.find({ status: true }).exec();
+    }
+
     const categories = await catModel.find();
-    const ctCategory = categories.find(cat => cat._id.toString() === category);
-    const categoryName =ctCategory ? ctCategory.name : null;
-    const theCategory = await catModel.find({_id:category})
-    res.render("user/shop", {theCategory, categoryName,categories,products, selectedCategory: category });
-    console.log("ipooooo",theCategory)
+    const ctCategory = category
+      ? categories.find((cat) => cat._id.toString() === category)
+      : null;
+    const categoryName = ctCategory ? ctCategory.name : null;
+    const theCategory = category
+      ? await catModel.find({ _id: category })
+      : null;
+
+    res.render("user/shop", {
+      theCategory,
+      categoryName,
+      categories,
+      products,
+      selectedCategory: category,
+    });
+    console.log("ipooooo", theCategory);
   } catch (error) {
     console.log(error);
-    res.status(500).send("error occured");
+    res.status(500).send("error occurred");
   }
 };
-
 
 //searchproduct
 const searchProducts = async (req, res) => {
@@ -198,68 +272,6 @@ const searchProducts = async (req, res) => {
   }
 };
 
-const filterProducts = async (req, res) => {
-  try {
-    const category = req.query.category;
-    const selectedType = req.query.filterType;
-    const sortOption = req.query.sortOption;
-
-    let products;
-
-    const filterConditions = {
-      category: category,
-      status: true,
-    };
-    if (selectedType && selectedType !== "All") {
-      filterConditions.type = selectedType;
-    }
-    if (sortOption === "-1") {
-      products = await productModel
-        .find(filterConditions)
-        .sort({ price: -1 })
-        .exec();
-    } else if (sortOption === "1") {
-      products = await productModel
-        .find(filterConditions)
-        .sort({ price: 1 })
-        .exec();
-    } else {
-      products = await productModel.find(filterConditions).exec();
-    }
-    const categories = await catModel.find();
-    const ctCategory = categories.find(
-      (cat) => cat._id.toString() === category
-    );
-    const categoryName = ctCategory ? ctCategory.name : null;
-    const theCategory = await catModel.find({ _id: category });
-
-    res.render("user/shop", {
-      selectedType,
-      theCategory,
-      categoryName,
-      categories,
-      products,
-      selectedCategory: category,
-      sorting: getSortingLabel(sortOption), // Pass the sorting label to the view
-    });
-
-    console.log("ipooooo", theCategory);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("error occured");
-  }
-};
-
-function getSortingLabel(sortOption) {
-  if (sortOption === "-1") {
-    return "Price: High To Low";
-  } else if (sortOption === "1") {
-    return "Price: Low To High";
-  } else {
-    return "Default Sorting"; // Add more labels based on your sorting options
-  }
-}
-
 const sortProducts = async (req, res) => {
   try {
     const sortOption = parseInt(req.query.sortPro, 10);
@@ -269,28 +281,35 @@ const sortProducts = async (req, res) => {
     let products;
     console.log(sortOption);
 
-    if (selectedType == "All") {
+    if (category) {
       products = await productModel
         .find({ $and: [{ category: category }, { status: true }] })
         .sort({ price: sortOption })
         .exec();
     } else {
       products = await productModel
-        .find({ $and: [{ category: category }, { status: true }] })
+        .find({ status: true })
         .sort({ price: sortOption })
         .exec();
     }
+
     let sorting;
-    if (sortOption === "-1") {
+    if (sortOption === -1) {
       sorting = "Price: High To Low";
-    } else if (sortOption == "1") {
+    } else if (sortOption === 1) {
       sorting = "Price: Low To High";
     }
+
     console.log("propro", products);
     const categories = await catModel.find();
-    const ctCategory = categories.find((cat) => cat.id.toString() === category);
+    const ctCategory = category
+      ? categories.find((cat) => cat.id.toString() === category)
+      : null;
     const categoryName = ctCategory ? ctCategory.name : null;
-    const theCategory = await catModel.find({ _id: category });
+    const theCategory = category
+      ? await catModel.find({ _id: category })
+      : null;
+
     res.render("user/shop", {
       selectedType,
       theCategory,
@@ -308,11 +327,70 @@ const sortProducts = async (req, res) => {
   }
 };
 
+const filterProducts = async (req, res) => {
+  try {
+    const category = req.query.category;
+    console.log(category);
+    const selectedType = req.query.filterType;
+    console.log(selectedType);
+    const sortOption = req.query.sortOption;
+    log;
+
+    let products;
+
+    const filterConditions = {
+      category: category,
+      status: true,
+    };
+
+    // Apply filtering based on selectedType
+    if (selectedType && selectedType !== "All") {
+      filterConditions.type = selectedType;
+    }
+
+    // Apply sorting based on sortOption
+    if (sortOption === "-1") {
+      products = await productModel
+        .find(filterConditions)
+        .sort({ price: -1 })
+        .exec();
+    } else if (sortOption === "1") {
+      products = await productModel
+        .find(filterConditions)
+        .sort({ price: 1 })
+        .exec();
+    } else {
+      products = await productModel.find(filterConditions).exec();
+    }
+
+    const categories = await catModel.find();
+    const ctCategory = categories.find(
+      (cat) => cat._id.toString() === category
+    );
+    const categoryName = ctCategory ? ctCategory.name : null;
+    const theCategory = await catModel.find({ _id: category });
+
+    res.render("user/mainshop", {
+      selectedType,
+      theCategory,
+      categoryName,
+      categories,
+      products,
+      selectedCategory: category,
+      sorting: getSortingLabel(sortOption),
+    });
+
+    console.log("ipooooo", theCategory);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("error occurred");
+  }
+};
 
 //login page
-const login=(req,res)=>{
-    res.render('user/userlogin')
-}
+const login = (req, res) => {
+  res.render("user/userlogin");
+};
 
 // login verification
 const verifylogin = async (req, res) => {
@@ -355,7 +433,6 @@ const forgot = async (req, res) => {
   }
 };
 
-
 //forgot pass email checking and otp generating
 const resetpassword = async (req, res) => {
   try {
@@ -395,11 +472,10 @@ const resetpassword = async (req, res) => {
   }
 };
 
-
 //reset password rendering page
 const reenterpassword = async (req, res) => {
   try {
-      res.render("user/reenterpassword");
+    res.render("user/reenterpassword");
   } catch {
     res.status(400).send("error occured");
   }
@@ -408,28 +484,25 @@ const reenterpassword = async (req, res) => {
 // reset password confrimation
 const confirm_password = async (req, res) => {
   try {
-      const password = req.body.newPassword;
-      const cpassword = req.body.confirmPassword;
+    const password = req.body.newPassword;
+    const cpassword = req.body.confirmPassword;
 
-      const ispasswordValid = passwordValid(password);
-      const iscpasswordValid = confirmpasswordValid(cpassword, password);
+    const ispasswordValid = passwordValid(password);
+    const iscpasswordValid = confirmpasswordValid(cpassword, password);
 
-      if (!ispasswordValid) {
-        res.render("user/reenterpassword", {
-          perror: "Password should contain (A,a,@)",
-        });
-      } else if (!iscpasswordValid) {
-        res.render("user/reenterpassword", { cperror: "Passwords not match" });
-      } else {
-        const hashedpassword = await bcrypt.hash(password, 10);
-        const email = req.session.user.email;
-        await userModel.updateOne(
-          { email: email },
-          { password: hashedpassword }
-        );
-        req.session.forgot = false;
-        res.redirect("/login");
-      }
+    if (!ispasswordValid) {
+      res.render("user/reenterpassword", {
+        perror: "Password should contain (A,a,@)",
+      });
+    } else if (!iscpasswordValid) {
+      res.render("user/reenterpassword", { cperror: "Passwords not match" });
+    } else {
+      const hashedpassword = await bcrypt.hash(password, 10);
+      const email = req.session.user.email;
+      await userModel.updateOne({ email: email }, { password: hashedpassword });
+      req.session.forgot = false;
+      res.redirect("/login");
+    }
   } catch {
     res.status(400).send("error occured");
   }
@@ -437,11 +510,11 @@ const confirm_password = async (req, res) => {
 
 //signup page
 const signup = async (req, res) => {
-    res.render('user/signup')
-}
+  res.render("user/signup");
+};
 
-// signup post 
-const signin= async (req, res) => {
+// signup post
+const signin = async (req, res) => {
   try {
     const username = req.body.username;
     const email = req.body.email;
@@ -449,11 +522,11 @@ const signin= async (req, res) => {
     const password = req.body.password;
     const cpassword = req.body.confirm_password;
 
-    console.log('Username:', username);
-  console.log('Email:', email);
-  console.log('Phone:', phone);
-  console.log('Password:', password);
-  console.log('Confirm Password:', cpassword);
+    console.log("Username:", username);
+    console.log("Email:", email);
+    console.log("Phone:", phone);
+    console.log("Password:", password);
+    console.log("Confirm Password:", cpassword);
 
     const isusernameValid = nameValid(username);
     const isEmailValid = emailValid(email);
@@ -509,156 +582,146 @@ const signin= async (req, res) => {
       await otpModel.updateOne(filter, update, options);
       await sendmail(email, otp);
       res.render("user/signupotp");
-    } 
-  }
-     catch (err) {
+    }
+  } catch (err) {
     console.error("Error:", err);
     res.send("error");
   }
 };
 
-
-
-  // otp page rendering 
+// otp page rendering
 const signupotp = async (req, res) => {
-    try {
-        res.render("user/signupotp");
-    } catch {
-      res.status(200).send("error occured");
-    }
-  };
+  try {
+    res.render("user/signupotp");
+  } catch {
+    res.status(200).send("error occured");
+  }
+};
 
+// otp verifying page
 
-  // otp verifying page 
-  
-  const verifyotp = async (req, res) => {
-    try {
-      const enteredotp = req.body.otp;
-      const user = req.session.user;
-      const email = req.session.user.email;
-      
-      const userdb = await otpModel.findOne({ email: email });
-      const otp = userdb.otp;
-      const expiry = userdb.expiry;
-      
-      if (enteredotp == otp && expiry.getTime() >= Date.now()) {
-        user.isVerified = true;
-        try {
-          if (req.session.signin) {
-            await userModel.create(user);
-            req.session.signin = false;
-            res.redirect("/login");
-          } else if (req.session.forgot) {
-            res.redirect("/reenterpassword");
-          }
-        } catch (error) {
-          console.error(error);
-          res.status(500).send("Error occurred while saving user data");
+const verifyotp = async (req, res) => {
+  try {
+    const enteredotp = req.body.otp;
+    const user = req.session.user;
+    const email = req.session.user.email;
+
+    const userdb = await otpModel.findOne({ email: email });
+    const otp = userdb.otp;
+    const expiry = userdb.expiry;
+
+    if (enteredotp == otp && expiry.getTime() >= Date.now()) {
+      user.isVerified = true;
+      try {
+        if (req.session.signin) {
+          await userModel.create(user);
+          req.session.signin = false;
+          res.redirect("/login");
+        } else if (req.session.forgot) {
+          res.redirect("/reenterpassword");
         }
-      } else {
-        res.render("user/signupotp", { otperror: "Wrong password/Time expired" });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Error occurred while saving user data");
       }
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error occurred");
+    } else {
+      res.render("user/signupotp", { otperror: "Wrong password/Time expired" });
     }
-  };
-  
-  //resend otp
-  const resendotp = async (req, res) => {
-    try {
-      console.log("resend otp is working");
-        const email = req.session.user.email;
-        const otp = generateotp();
-        console.log(otp);
-  
-        const currentTimestamp = Date.now();
-        const expiryTimestamp = currentTimestamp + 30 * 1000;
-        await otpModel.updateOne(
-          { email: email },
-          { otp: otp, expiry: new Date(expiryTimestamp) }
-        );
-        await sendmail(email, otp);
-      
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error occurred");
+  }
+};
 
-  // user profile page 
-  const profile = async (req, res) => {
-    try {
-        const categories = await catModel.find();
-        const id = req.session.userId;
-        const user = await userModel.findOne({ _id: id }); // Assuming you want to find the first user
-        console.log(user.username);
-        const name = user.username;
-        res.render("user/profile", { categories, name });
-        console.log(req.session.user);
-    } catch (error) {
-      console.log(error);
-      res.send(error);
-    }
-  };
+//resend otp
+const resendotp = async (req, res) => {
+  try {
+    console.log("resend otp is working");
+    const email = req.session.user.email;
+    const otp = generateotp();
+    console.log(otp);
+
+    const currentTimestamp = Date.now();
+    const expiryTimestamp = currentTimestamp + 30 * 1000;
+    await otpModel.updateOne(
+      { email: email },
+      { otp: otp, expiry: new Date(expiryTimestamp) }
+    );
+    await sendmail(email, otp);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// user profile page
+const profile = async (req, res) => {
+  try {
+    const categories = await catModel.find();
+    const id = req.session.userId;
+    const user = await userModel.findOne({ _id: id }); // Assuming you want to find the first user
+    console.log(user.username);
+    const name = user.username;
+    res.render("user/profile", { categories, name });
+    console.log(req.session.user);
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+};
 
 //singleproduct
 const singleproduct = async (req, res) => {
   try {
-    const id=req.params.id
-        const product=await productModel.findOne({_id:id})
-        const type= product.type;
-        console.log("type",type);
-        const similar = await productModel
-        .find({ type: type, _id: { $ne: id } })
-        .limit(4);
-        console.log("similar",similar);
-        const categories = await catModel.find();
-        product.images = product.images.map(image => image.replace(/\\/g, '/'));
-        console.log('Image Path:', product.images[0]);
-        res.render('user/singleproduct',{categories,product:product,similar})
+    const id = req.params.id;
+    const product = await productModel.findOne({ _id: id });
+    const type = product.type;
+    console.log("type", type);
+    const similar = await productModel
+      .find({ type: type, _id: { $ne: id } })
+      .limit(4);
+    console.log("similar", similar);
+    const categories = await catModel.find();
+    product.images = product.images.map((image) => image.replace(/\\/g, "/"));
+    console.log("Image Path:", product.images[0]);
+    res.render("user/singleproduct", { categories, product: product, similar });
   } catch (error) {
     console.log(error);
     res.status(500).send("error occured");
   }
 };
 
-
-
 //logout
 const logout = async (req, res) => {
   try {
-    
-      req.session.isAuth = false;
-      req.session.destroy();
-      res.redirect("/");
-    
+    req.session.isAuth = false;
+    req.session.destroy();
+    res.redirect("/");
   } catch (error) {
     console.log(error);
     res.send("Error Occured");
   }
 };
 
-
-
-module.exports={
-    index,
-    login,
-    signup,
-    signin,
-    signupotp,
-    verifylogin,
-    verifyotp,
-    resendotp,
-    forgot,
-    resetpassword,
-    reenterpassword,
-    confirm_password,
-    profile,
-    logout,
-    shop,
-    singleproduct,
-    searchProducts,
-    filterProducts,
-    sortProducts,
-    bannerURL
-}
+module.exports = {
+  index,
+  login,
+  signup,
+  signin,
+  signupotp,
+  verifylogin,
+  verifyotp,
+  resendotp,
+  forgot,
+  resetpassword,
+  reenterpassword,
+  confirm_password,
+  profile,
+  logout,
+  shop,
+  singleproduct,
+  searchProducts,
+  filterProducts,
+  sortProducts,
+  bannerURL,
+  shopping,
+};

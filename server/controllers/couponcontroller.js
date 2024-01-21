@@ -1,5 +1,6 @@
 const couponModel=require("../models/coupon_model")
 
+
 const createCoupon=async(req,res)=>{
     try{
         const {couponCode,minimumPrice,discount,expiry,maxRedeem,couponType}=req.body
@@ -116,11 +117,14 @@ const updateCoupon=async(req,res)=>{
 }
 
 
+
+
 module.exports={
     createCoupon,
     couponList,
     addcouponpage,
     unlistCoupon,
     editCouponPage,
-    updateCoupon
+    updateCoupon,
+
 }

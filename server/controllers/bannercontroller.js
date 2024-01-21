@@ -34,46 +34,47 @@ const addbanner=async(req,res)=>{
     }
 }
 
-const addBannerPost=async(req,res)=>{
+const addBannerPost = async (req, res) => {
     try {
-        const {bannerLabel,bannerTitle,bannerimage,bannerSubtitle,bannerColor}=req.body
-
-        const isVlaidObjectId=mongoose.Types.ObjectId.isValid;
-        let bannerLink
-        if(bannerLabel=='category'){
-            bannerLink=req.body.category
-        }
-        else if(bannerLabel=='product'){
-            bannerLink=req.body.product
-        }
-        else if(bannerLabel=='coupon'){
-            bannerLink=req.body.coupon
-        }
-        else{
-            bannerLink='general'
-        }
-        const newBanner= new bannerModel({
-            label:bannerLabel,
-            title:bannerTitle,
-            subtitle:bannerSubtitle,
-
-            image:{
-                public_id:req.file.filename,
-                url:`/uploads/${req.file.filename}`
-
-            },
-            color:bannerColor,
-            bannerLink:bannerLink
-        })
-        await newBanner.save()
-        const banners=await bannerModel.find()
-        res.render("admin/bannerList",{banners:banners})
-        
+        console.log("evide vann");
+       const { bannerLabel, bannerTitle, bannerSubtitle, bannerColor } = req.body;
+   
+       let bannerLink;
+       if (bannerLabel === 'category') {
+         bannerLink = req.body.category;
+       } else if (bannerLabel === 'product') {
+         bannerLink = req.body.product;
+       } else if (bannerLabel === 'coupon') {
+         bannerLink = req.body.coupon;
+       } else {
+         bannerLink = 'general';
+       }
+   
+       if (!req.file) {
+         throw new Error('No image was uploaded.');
+       }
+   
+       const newBanner = new bannerModel({
+         label: bannerLabel,
+         title: bannerTitle,
+         subtitle: bannerSubtitle,
+   
+         image: {
+           public_id: req.file.filename,
+           url: `/uploads/${req.file.filename}`,
+         },
+         color: bannerColor,
+         bannerLink: bannerLink,
+       });
+   
+       await newBanner.save();
+       const banners = await bannerModel.find();
+       res.render("admin/bannerList", { banners: banners });
     } catch (error) {
-        console.log(error);
-        res.render("user/serverError");
+       console.log(error);
+       res.render("user/serverError");
     }
-}
+   };
 
 const unlistBanner=async(req,res)=>{
     try {

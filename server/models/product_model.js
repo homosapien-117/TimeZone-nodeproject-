@@ -14,10 +14,12 @@ const productSchema=new Schema({
       ref: 'categories', 
       required: true,
   },
-    price:{
+  
+  price:{
         type:Number,
         required:true
     },
+    
     images: {
     type:Array,
     required:true,

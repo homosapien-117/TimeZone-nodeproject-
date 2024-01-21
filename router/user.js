@@ -1,15 +1,18 @@
 const express=require('express')
 const usrouter=express.Router()
+const { sep } = require("path/posix");
 const session=require('../middleware/isAuth')
 const uscontroller=require('../server/controllers/usercontroller')
-const {loged,signforgot,forgot,logedtohome}=session
 const profilecontroller=require("../server/controllers/profilecontrol")
 const cartcontroller=require('../server/controllers/cartcontroller')
 const checkoutcontroller=require('../server/controllers/checkoutcontroller')
-
+const orderCountrol=require('../server/controllers/ordercontrol')
+const couponControl=require('../server/controllers/couponcontroller')
+const {loged,signforgot,forgot,logedtohome}=session
 
 //index
 usrouter.get('/',uscontroller.index)
+usrouter.post('/pagination',uscontroller.index)
 
 
 //shop
@@ -17,6 +20,7 @@ usrouter.get("/shop", uscontroller.shop)
 usrouter.post("/searchProducts",uscontroller.searchProducts)
 usrouter.get('/filterProducts',uscontroller.filterProducts)
 usrouter.get("/sortProducts",uscontroller.sortProducts)
+usrouter.get("/shoping/:id", uscontroller.shopping)
 
 //single product
 usrouter.get("/singleproduct/:id", uscontroller.singleproduct);
@@ -35,7 +39,7 @@ usrouter.get("/singleorder/:id",loged,profilecontroller.singleOrderPage)
 usrouter.get("/cancelorder/:id",loged,profilecontroller.ordercancelling)
 usrouter.get('/returnorder/:id',loged,profilecontroller.orderReturn)
 usrouter.post("/cp",loged,profilecontroller.changepassword)
-
+usrouter.get("/download-invoice/:orderId",loged,orderCountrol.downloadInvoice)
 
 //cart
 usrouter.get("/cartpage",loged,cartcontroller.showcart)
@@ -85,6 +89,7 @@ usrouter.post('/walletTopup',loged,profilecontroller.walletTopup)
 usrouter.get("/Rewards",loged,profilecontroller.couponsAndRewards)
 usrouter.post("/applyCoupon",loged,checkoutcontroller.applyCoupon)
 usrouter.post("/revokeCoupon",loged,checkoutcontroller.recokeCoupon)
+
 
 // banner
 usrouter.get("/bannerURL",uscontroller.bannerURL)

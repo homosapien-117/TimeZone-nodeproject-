@@ -3,16 +3,33 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <title>StepEra Admin</title>
-    <link rel="stylesheet" href="/adminassets/vendors/mdi/css/materialdesignicons.min.css" />
-    <link rel="stylesheet" href="/adminassets/vendors/flag-icon-css/css/flag-icon.min.css" />
-    <link rel="stylesheet" href="/adminassets/vendors/css/vendor.bundle.base.css" />
-    <link rel="stylesheet" href="/adminassets/vendors/font-awesome/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/adminassets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/mdi/css/materialdesignicons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/flag-icon-css/css/flag-icon.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/css/vendor.bundle.base.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/font-awesome/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css"
+    />
     <link rel="stylesheet" href="/adminassets/css/style.css" />
     <link rel="shortcut icon" href="/adminassets/images/favicon.png" />
-    
   </head>
   <body>
     <div class="container-scroller">
@@ -22,10 +39,12 @@
           <i class="settings-close mdi mdi-close"></i>
           <p class="settings-heading">SIDEBAR SKINS</p>
           <div class="sidebar-bg-options selected" id="sidebar-default-theme">
-            <div class="img-ss rounded-circle bg-light border mr-3"></div> Default
+            <div class="img-ss rounded-circle bg-light border mr-3"></div>
+            Default
           </div>
           <div class="sidebar-bg-options" id="sidebar-dark-theme">
-            <div class="img-ss rounded-circle bg-dark border mr-3"></div> Dark
+            <div class="img-ss rounded-circle bg-dark border mr-3"></div>
+            Dark
           </div>
           <p class="settings-heading mt-2">HEADER SKINS</p>
           <div class="color-tiles mx-0 px-4">
@@ -35,34 +54,50 @@
         </div>
         <%- include('partials/nav')%>
         <div class="main-panel">
-         
-            <div class="container form-container">
-                <h1 class="mb-4">Update product Images</h1>
-        
-                <form action="/admin/updateimg/<%= product._id %>" method="post" enctype="multipart/form-data">
-                    <% product.images.forEach(item=>{ %>
-                        <img style=" width: 100px;height: 100px;"src="/<%= item %>">
-                         <a href="/admin/deleteimg?pid=<%= product._id %>&filename=<%= item %>" class="btn btn-danger btn-xs">Delete</a>
-                         <% }) %>
-                         <div class="mb-3">
-                            <label for="images" class="form-label">Add New Images:</label>
-                            <input type="file" class="form-control" id="images" name="images" accept="image/*" multiple style="width: 20%;">
-                        </div>
-                    <button type="submit" class="btn btn-primary">Save Image</button>
-                  </form>
-            </div>
-          
+          <div class="container form-container">
+            <h1 class="mb-4">Update product Images</h1>
 
+            <form
+              action="/admin/updateimg/<%= product._id %>"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <% product.images.forEach(item=>{ %>
+              <img style="width: 100px; height: 100px" src="/<%= item %>" />
+              <a
+                href="/admin/deleteimg?pid=<%= product._id %>&filename=<%= item %>"
+                class="btn btn-danger btn-xs"
+                >Delete</a
+              >
 
-         
+              <a
+                href="/admin/resizeimg?pid=<%= product._id %>&filename=<%= item %>"
+                class="btn btn-primary btn-xs"
+                >Resize</a
+              >
+              <% }) %>
+
+              <div class="mb-3">
+                <label for="images" class="form-label">Add New Images:</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="images"
+                  name="images"
+                  accept="image/*"
+                  multiple
+                  style="width: 20%"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Save Image</button>
+            </form>
+          </div>
         </div>
         <!-- main-panel ends -->
       </div>
       <!-- page-body-wrapper ends -->
     </div>
     <!-- container-scroller -->
-    <!-- plugins:js -->
-    
     <script src="/adminassets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->
@@ -84,6 +119,5 @@
     <!-- endinject -->
     <!-- Custom js for this page -->
     <script src="/adminassets/js/dashboard.js"></script>
-    <!-- End custom js for this page -->
   </body>
 </html>

@@ -3,35 +3,48 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <title>newbanner</title>
-    <link rel="stylesheet" href="/adminassets/vendors/mdi/css/materialdesignicons.min.css" />
-    <link rel="stylesheet" href="/adminassets/vendors/flag-icon-css/css/flag-icon.min.css" />
-    <link rel="stylesheet" href="/adminassets/vendors/css/vendor.bundle.base.css" />
-    <link rel="stylesheet" href="/adminassets/vendors/font-awesome/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/adminassets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/mdi/css/materialdesignicons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/flag-icon-css/css/flag-icon.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/css/vendor.bundle.base.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/font-awesome/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/adminassets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css"
+    />
     <link rel="stylesheet" href="/adminassets/css/style.css" />
     <link rel="shortcut icon" href="/adminassets/images/favicon.png" />
-
-    
-     
-     
-  
-    
   </head>
   <body>
     <div class="container-scroller">
-      
       <%- include('partials/sidebar')%>
       <div class="container-fluid page-body-wrapper">
         <div id="theme-settings" class="settings-panel">
           <i class="settings-close mdi mdi-close"></i>
           <p class="settings-heading">SIDEBAR SKINS</p>
           <div class="sidebar-bg-options selected" id="sidebar-default-theme">
-            <div class="img-ss rounded-circle bg-light border mr-3"></div> Default
+            <div class="img-ss rounded-circle bg-light border mr-3"></div>
+            Default
           </div>
           <div class="sidebar-bg-options" id="sidebar-dark-theme">
-            <div class="img-ss rounded-circle bg-dark border mr-3"></div> Dark
+            <div class="img-ss rounded-circle bg-dark border mr-3"></div>
+            Dark
           </div>
           <p class="settings-heading mt-2">HEADER SKINS</p>
           <div class="color-tiles mx-0 px-4">
@@ -42,80 +55,132 @@
         <%- include('partials/nav')%>
 
         <div class="main-panel">
-         
-            <div class="container form-container">
-                <h1 class="mb-4">Add Banner</h1>
-        
-                <form action="/admin/addBanner" method="post" enctype="multipart/form-data">
-                  <div class="mb-3">
-                    <label for="bannerLabel" class="form-label">Label:</label>
-                    <select class="form-select" id="bannerLabel" name="bannerLabel" required>
-                        <option value="" disabled selected>Select a label</option>
-                        <option value="category">Category</option>
-                        <option value="product">Products</option>
-                        <option value="coupon">Coupons</option>
-                        <option value="general">General</option>
-                    </select>
-                </div>
+          <div class="container form-container">
+            <h1 class="mb-4">Add Banner</h1>
 
-                <div class="mb-3" id="categorySelection" style="display: none;">
-                  <label for="category" class="form-label">Select Category:</label>
-                  <select class="form-select" id="category" name="category" required>
-                      <% categories.forEach(category => { %>
-                          <option value="<%= category._id %>"><%= category.name %></option>
-                      <% }) %>
-                  </select>
-              </div>
-
-              <div class="mb-3" id="productSelection" style="display: none;">
-                <label for="product" class="form-label">Select Product:</label>
-                <select class="form-select" id="product" name="product" required>
-                    <% products.forEach(product => { %>
-                        <option value="<%= product._id %>"><%= product.name %></option>
-                    <% }) %>
+            <form
+              action="/admin/addBanner"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <div class="mb-3">
+                <label for="bannerLabel" class="form-label">Label:</label>
+                <select
+                  class="form-select"
+                  id="bannerLabel"
+                  name="bannerLabel"
+                  required
+                >
+                  <option value="" disabled selected>Select a label</option>
+                  <option value="category">Category</option>
+                  <option value="product">Products</option>
+                  <option value="coupon">Coupons</option>
+                  <option value="general">General</option>
                 </select>
-            </div>
-
-            <div class="mb-3" id="couponSelection" style="display: none;">
-              <label for="coupon" class="form-label">Select Coupon:</label>
-              <select class="form-select" id="coupon" name="coupon" required>
-                  <% coupons.forEach(coupon => { %>
-                      <option value="<%= coupon._id %>"><%= coupon.couponCode %></option>
-                  <% }) %>
-              </select>
-          </div>
-                
-
-                    <div class="mb-3">
-                      <label for="parentCategory" class="form-label">title:</label>
-                      <input type="text" class="form-control" id="bannerTitle" name="bannerTitle" required>
-
-                     
-                    
-                  </div>
-                  <div class="mb-3">
-                    <label for="productType" class="form-label">Subtitle:</label>
-                    <input type="text" class="form-control" id="bannerSubtitle" name="bannerSubtitle" required>
-                </div>
-                  
-
-                  <div class="mb-3">
-                    <label for="images" class="form-label">Image:</label>
-                    <input type="file" class="form-control" id="bannerimage" name="image" accept="image/*" required>
-                </div>
-
-                <div class="mb-3">
-                  <label for="bannerColor" class="form-label">Select Text Color:</label>
-                  <input type="color" class="form-control" id="bannerColor" name="bannerColor" value="#ff0000" required>
-                  <div id="colorPreview" style="width: 30px; height: 30px; border: 1px solid #ccc; margin-top: 5px;"></div>
               </div>
-                    <button type="submit" class="btn btn-primary">Add Banner</button>
-                </form>
-            </div>
-          
 
+              <div class="mb-3" id="categorySelection" style="display: none">
+                <label for="category" class="form-label"
+                  >Select Category:</label
+                >
+                <select
+                  class="form-select"
+                  id="category"
+                  name="category"
+                  required
+                >
+                  <% categories.forEach(category => { %>
+                  <option value="<%= category._id %>">
+                    <%= category.name %>
+                  </option>
+                  <% }) %>
+                </select>
+              </div>
 
-         
+              <div class="mb-3" id="productSelection" style="display: none">
+                <label for="product" class="form-label">Select Product:</label>
+                <select
+                  class="form-select"
+                  id="product"
+                  name="product"
+                  required
+                >
+                  <% products.forEach(product => { %>
+                  <option value="<%= product._id %>">
+                    <%= product.name %>
+                  </option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <div class="mb-3" id="couponSelection" style="display: none">
+                <label for="coupon" class="form-label">Select Coupon:</label>
+                <select class="form-select" id="coupon" name="coupon" required>
+                  <% coupons.forEach(coupon => { %>
+                  <option value="<%= coupon._id %>">
+                    <%= coupon.couponCode %>
+                  </option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="parentCategory" class="form-label">title:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="bannerTitle"
+                  name="bannerTitle"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="productType" class="form-label">Subtitle:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="bannerSubtitle"
+                  name="bannerSubtitle"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="images" class="form-label">Image:</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="bannerimage"
+                  name="image"
+                  accept="image/*"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="bannerColor" class="form-label"
+                  >Select Text Color:</label
+                >
+                <input
+                  type="color"
+                  class="form-control"
+                  id="bannerColor"
+                  name="bannerColor"
+                  value="#ff0000"
+                  required
+                />
+                <div
+                  id="colorPreview"
+                  style="
+                    width: 30px;
+                    height: 30px;
+                    border: 1px solid #ccc;
+                    margin-top: 5px;
+                  "
+                ></div>
+              </div>
+              <button type="submit" class="btn btn-primary">Add Banner</button>
+            </form>
+          </div>
         </div>
         <!-- main-panel ends -->
       </div>
@@ -123,9 +188,7 @@
     </div>
     <!-- container-scroller -->
     <!-- plugins:js -->
-    </script>
-  
-    
+
     <script src="/adminassets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->
@@ -150,48 +213,39 @@
     <!-- End custom js for this page -->
     <script>
       // JavaScript to handle the onchange event of the bannerLabel dropdown
-      const bannerLabelSelect = document.getElementById('bannerLabel');
-      const categorySelectionDiv = document.getElementById('categorySelection');
-      const productSelectionDiv = document.getElementById('productSelection');
-      const couponSelectionDiv = document.getElementById('couponSelection');
+      const bannerLabelSelect = document.getElementById("bannerLabel");
+      const categorySelectionDiv = document.getElementById("categorySelection");
+      const productSelectionDiv = document.getElementById("productSelection");
+      const couponSelectionDiv = document.getElementById("couponSelection");
 
-
-  
-      bannerLabelSelect.addEventListener('change', function () {
-          if (bannerLabelSelect.value === 'category') {
-              categorySelectionDiv.style.display = 'block';
-              productSelectionDiv.style.display = 'none';
-              couponSelectionDiv.style.display = 'none';
-          }
-          else if (bannerLabelSelect.value === 'product') {
-              productSelectionDiv.style.display = 'block';
-              categorySelectionDiv.style.display = 'none';
-              couponSelectionDiv.style.display = 'none';
-
-
-          } 
-          else if (bannerLabelSelect.value === 'coupon') {
-             couponSelectionDiv.style.display = 'block';
-             categorySelectionDiv.style.display = 'none';
-              productSelectionDiv.style.display = 'none';
-          }  else {
-              categorySelectionDiv.style.display = 'none';
-              productSelectionDiv.style.display = 'none';
-              couponSelectionDiv.style.display = 'none';
-          }
+      bannerLabelSelect.addEventListener("change", function () {
+        if (bannerLabelSelect.value === "category") {
+          categorySelectionDiv.style.display = "block";
+          productSelectionDiv.style.display = "none";
+          couponSelectionDiv.style.display = "none";
+        } else if (bannerLabelSelect.value === "product") {
+          productSelectionDiv.style.display = "block";
+          categorySelectionDiv.style.display = "none";
+          couponSelectionDiv.style.display = "none";
+        } else if (bannerLabelSelect.value === "coupon") {
+          couponSelectionDiv.style.display = "block";
+          categorySelectionDiv.style.display = "none";
+          productSelectionDiv.style.display = "none";
+        } else {
+          categorySelectionDiv.style.display = "none";
+          productSelectionDiv.style.display = "none";
+          couponSelectionDiv.style.display = "none";
+        }
       });
-  </script>
+    </script>
 
-<script>
-  const bannerColorInput = document.getElementById('bannerColor');
-  const colorPreview = document.getElementById('colorPreview');
+    <script>
+      const bannerColorInput = document.getElementById("bannerColor");
+      const colorPreview = document.getElementById("colorPreview");
 
-  bannerColorInput.addEventListener('input', function () {
-      colorPreview.style.backgroundColor = bannerColorInput.value;
-  });
-</script>
-
-
- 
+      bannerColorInput.addEventListener("input", function () {
+        colorPreview.style.backgroundColor = bannerColorInput.value;
+      });
+    </script>
   </body>
 </html>

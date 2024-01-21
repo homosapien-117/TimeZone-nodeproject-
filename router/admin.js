@@ -8,7 +8,8 @@ const sessions = require("../middleware/isadAuth");
 const ordercontroller = require("../server/controllers/ordercontrol");
 const couponcontroller = require("../server/controllers/couponcontroller");
 const bannercontroller = require("../server/controllers/bannercontroller");
-const upload = multer({ dest: "uploads" });
+const upload = multer({ dest: "uploads/" });
+const { copy } = require("./user")
 const app = express();
 
 app.use(express.static("public/admin_assets"));
@@ -72,6 +73,8 @@ adminrouter.post(
   upload.array("images"),
   productcontroller.updateimg
 );
+adminrouter.get('/resizeimg',sessions.adisAuth,productcontroller.resizeImage)
+
 adminrouter.post(
   "/updateproduct/:id",
   sessions.adisAuth,
@@ -127,11 +130,7 @@ adminrouter.post(
   sessions.adisAuth,
   bannercontroller.addBannerPost
 );
-adminrouter.get(
-  "/unlistBanner/:id",
-  sessions.adisAuth,
-  bannercontroller.unlistBanner
-);
+adminrouter.get('/unlistBanner/:id',sessions.adisAuth,bannercontroller.unlistBanner)
 adminrouter.get(
   "/updateBanner/:id",
   sessions.adisAuth,

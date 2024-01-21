@@ -36,10 +36,10 @@
         <%- include('partials/nav')%>
         <div class="main-panel">
          
-            <div class="container form-container">
-                <h1 class="mb-4">Update product</h1>
+          <div class="container form-container">
+            <h1 class="mb-4">Update Product</h1>
         
-                <form action="/admin/updateproduct/<%= product._id %>" method="post">
+            <form action="/admin/updateproduct/<%= product._id %>" method="post">
                     <div class="mb-3">
                         <label for="categoryName" class="form-label">Product Name:</label>
                         <input type="text" class="form-control" id="categoryName" name="productName" value="<%= product.name %>" required>
@@ -58,14 +58,18 @@
                     </div>
                     <div class="mb-3">
                       <label for="parentCategory" class="form-label">Category:</label>
-                      <select class="form-select" id="parentCategory" name="parentCategory"   required>
-                        <option value="" disabled selected>Select Category</option>
-                        <% category.forEach(category => { %>
-                            <option value="<%= category._id %>"><%= category.name %></option>
-                        <% }); %>
-                    </select>
-                    
+                      <select class="form-select" id="parentCategory" name="parentCategory" required>
+                          <option value="" disabled>Select Category</option>
+                          <% category.forEach(category => { %>
+                              <% if (product.parentCategory && category._id.toString() === product.parentCategory.toString()) { %>
+                                  <option value="<%= category._id %>" selected><%= category.name %></option>
+                              <% } else { %>
+                                  <option value="<%= category._id %>"><%= category.name %></option>
+                              <% } %>
+                          <% }); %>
+                      </select>
                   </div>
+                    
         
                     <div class="mb-3">
                       <label for="description" class="form-label">Description:</label>

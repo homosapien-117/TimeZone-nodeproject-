@@ -70,19 +70,19 @@
                                 
                                 <!-- <td><%= order.createdAt %></td> -->
                                 <td>
-                                    <!-- Form for updating the order status -->
-                                    <form action="/admin/updateOrderStatus" method="post" id="orderStatusForm_<%= order._id %>">
-                                        <input type="hidden" name="orderId" value="<%= order._id %>">
-                                        
-                                        <label for="status"></label>
-                                        <select name="status" id="status_<%= order._id %>" onchange="submitForm('<%= order._id %>')">
-                                            <% const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered','Cancelled','Returned']; %>
-                                            <% for (const status of statuses) { %>
-                                                <option value="<%= status %>" <%= order.status === status ? 'selected' : '' %>><%= status.charAt(0).toUpperCase() + status.slice(1) %></option>
-                                            <% } %>
-                                        </select>
-                                    </form>
-                                    
+                                  <!-- Form for updating the order status -->
+                                  <form action="/admin/updateOrderStatus" method="post" id="orderStatusForm_<%= order._id %>">
+                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                    <label for="status"></label>
+                                    <select name="status" id="status_<%= order._id %>" onchange="submitForm('<%= order._id %>')">
+                                      <% const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned']; %>
+                                      <% for (const status of statuses) { %>
+                                        <% if (status !== 'Cancelled' || order.status !== 'Delivered') { %>
+                                          <option value="<%= status %>" <%= order.status === status ? 'selected' : '' %>><%= status.charAt(0).toUpperCase() + status.slice(1) %></option>
+                                        <% } %>
+                                      <% } %>
+                                    </select>
+                                  </form>
                                 </td>
                                 <td>
                                   <%= order.createdAt.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %>

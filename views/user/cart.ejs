@@ -39,9 +39,6 @@
     margin-bottom: 20px;
     border-radius: 10px;
 }
-.passwordForm{
-  margin-top: 12vh;
-}
     </style>
 </head>
 
@@ -75,11 +72,8 @@
                                     <li><a href="/">Home</a></li>
                                     
                                     <!-- <li><a href="about.html">about</a></li> -->
-                                    <li class="hot"><a href="#">Latest</a>
-                                        <ul class="submenu">
-                                            <li><a href="shop.html"> Product list</a></li>
-                                            <li><a href="product_details.html"> Product Details</a></li>
-                                        </ul>
+                                    <li class="hot">
+                                    <a href="/shop">shop</a>
                                     </li>
                                     <li><a href="#">Category</a>
                                         <ul class="submenu">
@@ -160,12 +154,12 @@
                                             class="input-text qty">
                                         <button
                                             onclick="updateQuantity('<%= cart._id %>','<%= item._id %>','<%= item.price %>','<%= index %>' , 1 )"
-                                            class="increase items-count" type="button">
-                                            <i class="lnr lnr-chevron-up">+</i></button>
+                                            class="increase items-count" type="button" style="background-color: black;">
+                                            <i class="lnr lnr-chevron-up" >+</i></button>
                                         <button
                                             onclick="updateQuantity('<%= cart._id %>','<%= item._id %>','<%= item.price %>', '<%= index %>', -1 )"
-                                            class="reduced items-count" type="button"><i
-                                                class="lnr lnr-chevron-down">-</i></button>
+                                            class="reduced items-count" type="button"style="background-color: black;"><i
+                                                class="lnr lnr-chevron-down" >-</i></button>
                                     </div>
                                 </td>
                       
@@ -325,6 +319,7 @@
                 </form>
             </div>
         </div>
+    </body>
         <!-- Search model end -->
         <script>
             function confirmDelete(deleteUrl) {
@@ -423,5 +418,5 @@
         <script src="./user_assets/js/main.js"></script>
 
         
-    </body>
+    
     </html>

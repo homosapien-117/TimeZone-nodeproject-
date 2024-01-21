@@ -179,6 +179,21 @@ const updateproduct = async (req, res) => {
     res.send("Error Occured");
   }
 };
+
+const resizeImage=async(req,res)=>{
+  try {
+        const pid=req.query.pid
+        const filename=req.query.filename
+        const imagePath=path.join(filename)
+        res.render('admin/resizeImg',{imagePath})
+        console.log(imagePath)
+  } catch (error) {
+    console.log(error);
+    res.render("user/serverError");
+  }
+
+}
+
   // module exporting 
 module.exports = {
   product,
@@ -190,5 +205,6 @@ module.exports = {
   updatepro,
   deleteimg,
   updateimg,
-  updateproduct
+  updateproduct,
+  resizeImage
 };

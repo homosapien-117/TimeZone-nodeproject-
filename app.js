@@ -8,6 +8,7 @@ const multer = require("multer");
 const usrouter = require("./router/user");
 const adrouter = require("./router/admin");
 const path = require("path");
+const flash=require('express-flash')
 
 app.use(
   session({
@@ -26,6 +27,7 @@ app.set("public", path.join(__dirname, "public/user_assets"));
 //view engine
 app.set("view engine", "ejs");
 
+app.use(flash());
 app.use(express.json());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
@@ -38,23 +40,31 @@ mongo.connect();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/");
+    cb(null, 'uploads/'); 
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname + ".png");
-  },
+    cb(null, Date.now() + '-' + file.originalname+".png"); 
+  }
 });
 
 const upload = multer({ storage: storage });
 
-app.post("/your-upload-route", upload.array("files"), (req, res) => {
+app.post('/your-upload-route', upload.array('files'), (req, res) => {
   console.log(req.files);
 });
 
 app.use("/", usrouter);
 app.use("/admin", adrouter);
+app.get('*',(req,res)=>{
+  res.render('user/404')
+});
 
 //port
 app.listen(4000, () => {
   console.log("http://localhost:4000");
 });
+
+
+
+
+
