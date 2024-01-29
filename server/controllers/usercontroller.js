@@ -60,55 +60,47 @@ const sendmail = async (email, otp) => {
 //index page
 const index = async (req, res) => {
   try {
+    
     const [categories, banners] = await Promise.all([
       catModel.find(),
       bannerModel.find(),
-    ]);
+          ]);
+      
+      console.log(categories);
+      console.log(banners);
 
-    console.log(categories);
-    console.log(banners);
+      const limit = 6;
+      let page = parseInt(req.body.currentPage) || 1;
+      const action = req.body.action;
+      const prodCount = await productModel.countDocuments();
+      const totalPages = Math.ceil(prodCount/limit);
+      if(action){
+        page+=action
+      }
+      const skip = (page-1)*limit;
+      const from = skip + 1;
+      const to = skip + limit;
+      const products=await productModel.find().limit(limit).skip(skip)
 
-    const limit = 6;
-    let page = parseInt(req.body.currentPage) || 1;
-    const action = req.body.action;
-    const prodCount = await productModel.countDocuments();
-    const totalPages = Math.ceil(prodCount / limit);
-    console.log("total pages:", totalPages);
+      if(req.body.currentPage)
+      {
+        return res.json({
+          currentPage:page,
+          totalPages,
+          products,
+          from,
+          to,
+          success:true,
+          totalProduccts:prodCount
+        })
+      }
 
-    if (action) {
-      page += action;
-    }
 
-    const skip = (page - 1) * limit;
-    const from = skip + 1;
-    const to = Math.min(skip + limit, prodCount);
-    const products = await productModel.find().limit(limit).skip(skip);
-    console.log("Products:", products);
 
-    if (req.body.currentPage) {
-      return res.json({
-        currentPage: page,
-        totalPages,
-        products,
-        from,
-        to,
-        success: true,
-        totalProducts: prodCount,
-      });
-    }
-
-    res.render("user/index", {
-      categories,
-      banners,
-      products,
-      currentPage: page,
-      totalPages,
-      from,
-      to,
-    });
+    res.render("user/index", { categories, banners ,products, currentPage:page, totalPages});
   } catch (error) {
     console.error("Error fetching data:", error);
-    res.render("user/serverError");
+    res.render('user/serverError')
   }
 };
 

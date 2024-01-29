@@ -91,6 +91,10 @@
       background-color: #3b5d50;
       color: #ffffff;
     }
+    #product-container {
+  display: flex;
+  flex-wrap: wrap;
+}
     </style>
   </head>
 
@@ -246,7 +250,7 @@
       <!-- ? New Product Start -->
       <div class="popular-items section-padding30">
         <div class="container" id="productcontainer">
-            <!-- Section tittle -->
+            <!-- Section title -->
             <div class="row justify-content-center">
                 <div class="col-xl-7 col-lg-8 col-md-10">
                     <div class="section-tittle mb-70 text-center">
@@ -255,19 +259,19 @@
                     </div>
                 </div>
             </div>
-            <!-- product_display.ejs -->
+            <!-- Product display -->
             <div class="row">
                 <% products.forEach(product => { %>
-                    <div  class="col-xl-4 col-lg-4 col-md-6 col-sm-6" >
-                        <a href="/singleproduct/<%= product._id %>">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                    <a href="/singleproduct/<%= product._id %>">
                         <div class="single-popular-items mb-50 text-center">
                             <div class="popular-img">
                                 <% if (product.images && product.images.length > 0) { %>
-                                    <!-- Display the first image -->
-                                    <img src="<%= product.images[0] %>" alt="<%= product.name %>">
+                                <!-- Display the first image -->
+                                <img src="<%= product.images[0] %>" alt="<%= product.name %>">
                                 <% } else { %>
-                                    <!-- Display a placeholder image if no images are available -->
-                                    <img src="path/to/placeholder-image.jpg" alt="Placeholder Image">
+                                <!-- Display a placeholder image if no images are available -->
+                                <img src="path/to/placeholder-image.jpg" alt="Placeholder Image">
                                 <% } %>
                                 <div class="img-cap">
                                     <span>Add to cart</span>
@@ -277,27 +281,30 @@
                                 </div>
                             </div>
                             <div class="popular-caption">
-                                <h3><%= product.name %></a></h3>
+                                <h3><%= product.name %></h3>
                                 <span>Rs <%= product.price %></span>
-                            </a>
                             </div>
                         </div>
-                    </div>
+                    </a>
+                </div>
                 <% }); %>
             </div>
+        </div>
+    </div>
+    
 
 
-            <div id="containers" >
-              <div class="circular-buttons">
-              <% if(currentPage > 1)  { %>
-                <a  class="circular-btn"  onclick="changePage('<%=currentPage%>',-1)"><i class="fas fa-angle-left "></i></a>
-              <% } %>
-                <div class="number-circle animated"><%=currentPage%></div>
-              <% if(currentPage < totalPages) { %>
-                <a  class="circular-btn" onclick="changePage('<%=currentPage%>',1)"><i class="fas fa-angle-right"></i></a>
-              <% } %>
-              </div>
-              </div>
+    <div id="container">
+      <div class="circular-buttons">
+      <% if(currentPage > 1)	{ %>
+        <a  class="circular-btn"  onclick="changePage('<%=currentPage%>',-1)"><i class="fas fa-angle-left"></i></a>
+      <% } %>
+        <div class="number-circle animated"><%=currentPage%></div>
+      <% if(currentPage < totalPages) { %>
+        <a  class="circular-btn" onclick="changePage('<%=currentPage%>',1)"><i class="fas fa-angle-right"></i></a>
+      <% } %>
+      </div>
+      </div>
       <!-- Shop Method End-->
     </main>
     <footer>
@@ -443,7 +450,14 @@
 				autoplayButtonOutput: false 
 			  });
 			});
-		 
+		  </script>
+		<script src="js/bootstrap.bundle.min.js"></script>
+		<script src="js/tiny-slider.js"></script>
+		<script src="js/custom.js"></script>
+		<script src="js/togglenav.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-GLhlTQ8iK1u6o9d6swnf7D90qwgwR4O/4XBDlB1Fm/E=" crossorigin="anonymous"></script>
+
+	<script>
   document.addEventListener('DOMContentLoaded', function abcd() {
     new bootstrap.Carousel(document.getElementById('carouselExampleIndicators'), {
       interval: 5000, 
@@ -479,47 +493,67 @@
 
 
   function updateProductContainer(products) {
-    const productContainer = document.getElementById("productcontainer");;
+    const productContainer = document.getElementById("productcontainer");
     if (!productContainer) {
         console.error("Container element not found.");
         return;
     }
+
     productContainer.innerHTML = ""; 
+
+    let row = document.createElement('div');
+    row.classList.add('row');
+
     products.forEach(product => {
-      const newHTML = `
-      <div  class="col-xl-4 col-lg-4 col-md-6 col-sm-6" >
-                        <a href="/singleproduct/${product._id}">
-                        <div class="single-popular-items mb-50 text-center">
-                            <div class="popular-img">
-                               
-                                    <img src="${product.images[0]}" alt="${product.name}">
-                                <div class="img-cap">
-                                    <span>Add to cart</span>
-                                </div>
-                                <div class="favorit-items">
-                                    <span class="flaticon-heart"></span>
-                                </div>
+        const productHTML = `
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                <a href="/singleproduct/${product._id}">
+                    <div class="single-popular-items mb-50 text-center">
+                        <div class="popular-img">
+                            <img src="${product.images[0]}" alt="${product.name}">
+                            <div class="img-cap">
+                                <span>Add to cart</span>
                             </div>
-                            <div class="popular-caption">
-                                <h3>${product.name}</a></h3>
-                                <span>Rs${product.price}</span>
-                            </a>
+                            <div class="favorit-items">
+                                <span class="flaticon-heart"></span>
                             </div>
-      `;
-      productContainer.innerHTML += newHTML;
+                        </div>
+                        <div class="popular-caption">
+                            <h3>${product.name}</h3>
+                            <span>Rs ${product.price}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        `;
+
+
+        row.innerHTML += productHTML;
+
+       
+        if (row.children.length === 3) {
+            productContainer.appendChild(row);
+            row = document.createElement('div');
+            row.classList.add('row');
+        }
     });
-  }
-  
+
+   
+    if (row.children.length > 0) {
+        productContainer.appendChild(row);
+    }
+}
+
 
   function updatePaginationContainer(currentPage,totalPages){
-    let values=document.getElementById('containers');
+    let values=document.getElementById('container');
     values.innerHTML=" ";
     const leftArrow = currentPage > 1
     ? `<a  class="circular-btn"  onclick="changePage('${currentPage}',-1)"><i class="fas fa-angle-left"></i></a>`
     : '';
 
     const rightArrow = currentPage < totalPages
-?` <a  class="circular-btn" onclick="changePage('${currentPage}',1)"><i class="fas fa-angle-right"></i></a>`
+? `<a  class="circular-btn" onclick="changePage('${currentPage}',1)"><i class="fas fa-angle-right"></i></a>`
 : '';
 
   const paginationHTML = 
@@ -571,14 +605,5 @@
     <!-- Jquery Plugins, main Jquery -->
     <script src="./user_assets/js/plugins.js"></script>
     <script src="./user_assets/js/main.js"></script>
-
-  </script>
-  <script src="js/bootstrap.bundle.min.js"></script>
-  <script src="js/tiny-slider.js"></script>
-  <script src="js/custom.js"></script>
-  <script src="js/togglenav.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-GLhlTQ8iK1u6o9d6swnf7D90qwgwR4O/4XBDlB1Fm/E=" crossorigin="anonymous"></script>
-
-<script>
   </body>
 </html>
