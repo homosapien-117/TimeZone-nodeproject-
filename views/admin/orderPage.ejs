@@ -75,7 +75,7 @@
                                     <input type="hidden" name="orderId" value="<%= order._id %>">
                                     <label for="status"></label>
                                     <select name="status" id="status_<%= order._id %>" onchange="submitForm('<%= order._id %>')">
-                                      <% const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned']; %>
+                                      <% const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered','Cancelation req', 'Cancelled', 'Returned']; %>
                                       <% for (const status of statuses) { %>
                                         <% if (status !== 'Cancelled' || order.status !== 'Delivered') { %>
                                           <option value="<%= status %>" <%= order.status === status ? 'selected' : '' %>><%= status.charAt(0).toUpperCase() + status.slice(1) %></option>
@@ -113,12 +113,10 @@
       </div>
       <!-- page-body-wrapper ends -->
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
+   
     
     <script src="/adminassets/vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
+    
     <script src="/adminassets/vendors/chart.js/Chart.min.js"></script>
     <script src="/adminassets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
     <script src="/adminassets/vendors/flot/jquery.flot.js"></script>

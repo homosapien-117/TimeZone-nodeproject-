@@ -4,7 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>StepEra Admin</title>
+    <title>Timezone Admin</title>
     <link rel="stylesheet" href="/adminassets/vendors/mdi/css/materialdesignicons.min.css" />
     <link rel="stylesheet" href="/adminassets/vendors/flag-icon-css/css/flag-icon.min.css" />
     <link rel="stylesheet" href="/adminassets/vendors/css/vendor.bundle.base.css" />
@@ -58,16 +58,17 @@
                     </div>
                     <div class="mb-3">
                       <label for="parentCategory" class="form-label">Category:</label>
-                      <select class="form-select" id="parentCategory" name="parentCategory" required>
-                          <option value="" disabled>Select Category</option>
-                          <% category.forEach(category => { %>
-                              <% if (product.parentCategory && category._id.toString() === product.parentCategory.toString()) { %>
-                                  <option value="<%= category._id %>" selected><%= category.name %></option>
-                              <% } else { %>
-                                  <option value="<%= category._id %>"><%= category.name %></option>
-                              <% } %>
-                          <% }); %>
-                      </select>
+                      <select class="form-select" id="parentCategory" name="parentCategory"   required>
+                        <option value="" disabled selected>Select Category</option>
+                        <% category.forEach(category => { %>
+                          <% if (category._id.toString() === product.category.toString()) { %>
+                              <option value="<%= category._id %>" selected><%= category.name %></option>
+                          <% } else { %>
+                              <option value="<%= category._id %>"><%= category.name %></option>
+                          <% } %>
+                      <% }); %>
+                    </select>
+                    
                   </div>
                     
         

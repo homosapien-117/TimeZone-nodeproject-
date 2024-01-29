@@ -20,7 +20,7 @@ const wallet = async (req, res) => {
     console.log(user.walletTransactions);
     const usertransactions = user.walletTransactions.reverse();
 
-    res.render("users/wallet", { categories, userWallet, usertransactions });
+    res.render("user/wallet", { categories, userWallet, usertransactions });
   } catch (err) {
     console.log(err);
     res.status(500).send("Internal Server Error");

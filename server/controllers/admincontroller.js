@@ -534,5 +534,5 @@ module.exports = {
   updatecat,
   updatecategory,
   chartData,
-  downloadsales,
+  downloadsales
 };

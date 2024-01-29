@@ -194,6 +194,39 @@ const resizeImage=async(req,res)=>{
 
 }
 
+const ratePage = async (req, res) => {
+  try {
+    const { id, rating, review } = req.query;
+    const userId = req.session.userId;
+
+    const productId = id;
+
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      res.render("user/serverError")
+    }
+
+    const existingUserRating = product.userRatings.find(
+      (userRating) => userRating.userId.toString() === userId
+    );
+
+    if (existingUserRating) {
+      existingUserRating.rating = rating;
+      existingUserRating.review = review;
+    } else {
+      product.userRatings.push({ userId, rating, review });
+    }
+
+    await product.save();
+
+    res.redirect("/orderhistory");
+  } catch (err) {
+    console.log(err);
+    res.render("user/serverError")
+  }
+};
+
   // module exporting 
 module.exports = {
   product,
@@ -206,5 +239,6 @@ module.exports = {
   deleteimg,
   updateimg,
   updateproduct,
-  resizeImage
+  resizeImage,
+  ratePage
 };

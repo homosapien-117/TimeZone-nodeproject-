@@ -37,9 +37,16 @@ const productSchema=new Schema({
     description:{
         type:String,
         required:true
-    }
+    },
+    userRatings: [
+        {
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+            rating: { type: Number },
+            review: { type: String },
+        },
+    ],
     
-})
+});
 
 // model creating 
 const productModel=new mongoose.model("products",productSchema)

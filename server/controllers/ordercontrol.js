@@ -64,6 +64,7 @@ const downloadInvoice = async (req, res) => {
       const data = {
         documentTitle: "Invoice",
         currency: "INR",
+        taxNotation:"vat",
         marginTop: 25,
         marginRight: 25,
         marginLeft: 25,
@@ -79,27 +80,29 @@ const downloadInvoice = async (req, res) => {
           website: "www.TimeZone.online",
         },
         invoiceNumber: "INV-${order.orderId}",
-        invoiceDate: new Date().toJSON(),
-        products: order.items.map((item) => ({
-          quantity: item.quantity,
-          description: item.productName,
-          price: item.price,
-        })),
+      invoiceDate: new Date().toJSON(),
+      products: order.items.map((item) => ({
+        quantity: item.quantity,
+        description: item.productName,
+        price: item.price,
+      })),
+
+      total: parseInt(totalAmount),
+      tax: 0,
+      bottomNotice: "Thank you for shopping at UrbanSole!",
+    };
+  const result = await easyinvoice.createInvoice(data);
+  console.log(result);
+  const pdfBuffer = Buffer.from(result.pdf, "base64");
   
-        total: parseInt(totalAmount),
-        tax: 0,
-        bottomNotice: "Thank you for shopping at UrbanSole!",
-      };
-    const result = await easyinvoice.createInvoice(data);
-    const pdfBuffer = Buffer.from(result.pdf, "base64");
-  
-    return pdfBuffer;
-  }catch(error){
-      console.log(error);
-  }
-  
-  
-  }
+
+  return pdfBuffer;
+}catch(error){
+    console.log(error);
+}
+
+
+}
 
 module.exports={
     orderPage,

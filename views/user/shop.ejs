@@ -40,10 +40,10 @@
         text-align: center;
       }
       .popular-img img,
-        .choice-watch-img img {
-            height: 260px; /* Set the desired height */
-            width: 379.98px; /* Ensure the width adjusts proportionally */
-        }
+      .choice-watch-img img {
+        height: 260px;
+        width: 379.98px;
+      }
     </style>
   </head>
 
@@ -78,22 +78,10 @@
                   <ul id="navigation">
                     <li><a href="/">Home</a></li>
 
-                    <!-- <li><a href="about.html">about</a></li> -->
                     <li class="hot">
-                      <a href="#">Latest</a>
-                      <ul class="submenu">
-                        <li><a href="shop.html"> Product list</a></li>
-                        <li>
-                          <a href="product_details.html"> Product Details</a>
-                        </li>
-                      </ul>
-                    </li>
-                    <!-- <li><a href="blog.html">Blog</a>
-                                        <ul class="submenu">
-                                            <li><a href="blog.html">Blog</a></li>
-                                            <li><a href="blog-details.html">Blog Details</a></li>
-                                        </ul>
-                                    </li> -->
+                      <a href="/shop">shop</a>
+                    </li> SAza2`
+
                     <li>
                       <a href="#">Category</a>
                       <ul class="submenu">
@@ -169,35 +157,6 @@
           </div>
           <div class="col-lg-7 d-flex justify-content-end align-items-center">
             <div class="sorting-filtering-options">
-
-
-               <!-- Filtering Options -->
-              <!-- <div class="filtering-options">
-                            <form id="filterForm" action="/filterProducts" method="GET">
-                                
-                                <select id="filterSelect" name="filterType" class="form-control-lg" onchange="submitFilterForm()">
-                                    <% if (locals.selectedType) { %>
-                                    <option value="default" disabled selected><%=selectedType%></option>
-                                    <% } else { %>
-                                        <option value="default" disabled selected>Filter-by</option>
-                                        <% } %>
-
-                                    <% console.log("categoryItem", theCategory); %>
-                                    <% if (theCategory && theCategory[0].types) { %>
-                                        <% console.log("categoryItem"); %>
-                                        <% theCategory[0].types.forEach(function(option) { %>
-                                            <option value="<%= option %>"><span><%= option %></span></option>
-                                        <% }); %>
-                                    <% } %>
-                                    
-                                </select>
-                                <input type="hidden" name="category" value="<%= selectedCategory %>">
-                                <% if (locals.sortoption) { %>
-                                    <input type="hidden" name="sortoption" value="<%= sortoption%>">
-                                    <% } %>
-                            </form>
-                        </div> -->
-              
               <!-- Sorting Options -->
               <div class="sorting-options">
                 <form id="sortform" action="/sortProducts" method="GET">
@@ -217,8 +176,6 @@
 
                     <option value="1">Price: Low To High</option>
                     <option value="-1">Price: High To Low</option>
-
-                    <!-- Add more options based on your needs -->
                   </select>
                   <input
                     type="hidden"
@@ -236,13 +193,6 @@
                   <% } %>
                 </form>
               </div>
-
-             
-
-              <!-- Add styling and additional UI elements as needed -->
-              <!-- For example, you can use buttons, icons, etc. -->
-
-              <!-- Example button -->
             </div>
           </div>
         </div>

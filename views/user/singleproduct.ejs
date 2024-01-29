@@ -6,7 +6,7 @@
     <title>Watch shop | eCommers</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="manifest" href="site.webmanifest" />
+    <!-- <link rel="manifest" href="site.webmanifest" /> -->
     <link
       rel="shortcut icon"
       type="image/x-icon"
@@ -25,21 +25,49 @@
     <link rel="stylesheet" href="/user_assets/css/slick.css" />
     <link rel="stylesheet" href="/user_assets/css/nice-select.css" />
     <link rel="stylesheet" href="/user_assets/css/style.css" />
+
+    <style>
+      .user-ratings-section {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .user-rating {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+      }
+
+      .user-name {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .rating {
+        color: #ffc107; /* Star color */
+        margin-bottom: 10px;
+      }
+
+      .review {
+        margin-bottom: 0;
+      }
+
+      hr {
+        border: 0.5px solid #ddd;
+      }
+      .rating-container {
+        font-weight: 700;
+        border: 1px solid #efeeee;
+        border-radius: 8px;
+        padding-left: 3px;
+        padding-right: 3px;
+      }
+    </style>
   </head>
 
   <body>
-    <!--? Preloader Start -->
-    <!-- <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="preloader-circle"></div>
-                <div class="preloader-img pere-text">
-                    <img src="user_assets/img/logo/logo.png" alt="img">
-                </div>
-            </div>
-        </div>
-    </div> -->
-    <!-- Preloader Start -->
     <header>
       <!-- Header Start -->
       <div class="header-area">
@@ -60,13 +88,7 @@
 
                     <!-- <li><a href="about.html">about</a></li> -->
                     <li class="hot">
-                      <a href="#">Latest</a>
-                      <ul class="submenu">
-                        <li><a href="shop.html"> Product list</a></li>
-                        <li>
-                          <a href="product_details.html"> Product Details</a>
-                        </li>
-                      </ul>
+                      <a href="/shop">shop</a>
                     </li>
                     <li>
                       <a href="#">Category</a>
@@ -136,9 +158,19 @@
         <div class="product-container">
           <div class="product-image">
             <% product.images.forEach(image => { %>
-              <a href="/<%= image %>" class="MagicZoom" id="Mag" data-options="zoomMode: 'zoom', variableZoom: true">
-                <img src="/<%= image %>" alt="Product Image" class="img-fluid" style="width: 300px; height: 300px; object-fit: cover;">
-              </a>
+            <a
+              href="/<%= image %>"
+              class="MagicZoom"
+              id="Mag"
+              data-options="zoomMode: 'zoom', variableZoom: true"
+            >
+              <img
+                src="/<%= image %>"
+                alt="Product Image"
+                class="img-fluid"
+                style="width: 300px; height: 300px; object-fit: cover"
+              />
+            </a>
             <% }); %>
           </div>
         </div>
@@ -146,6 +178,17 @@
         <!-- Product Details Section -->
         <div class="product-details-section">
           <h1><%= product.name %></h1>
+          <p class="col-12 d-flex justify-content-end">
+            <% if (product.userRatings && product.userRatings.length > 0) { %>
+            <span id="ratingContainer" class="rating-container">
+              ★&nbsp;<span id="avgrating"><%= averageRating %> </span
+              >&nbsp;<span>(<%= totalRatings %>)</span>
+            </span>
+            <% } else { %>
+          </p>
+
+          <p>No ratings yet</p>
+          <% } %>
           <p class="price">RS.<%= product.price.toFixed(2) %></p>
 
           <div class="description">
@@ -156,30 +199,56 @@
             >Add to Cart</a
           >
           <a href="/addtofavourites/<%=product._id%>"
-            ><button class="btn btn-secondary" style="height: 50px;">
+            ><button class="btn btn-secondary" style="height: 50px">
               <span class="fas fa-heart"></span> Add to Wishlist
             </button></a
           >
-
-          <!-- Add your buttons, forms, and other details as needed -->
         </div>
       </div>
-      <!-- Similar Products Section -->
 
-      <!-- <div class="product-details-section">
-            <h1><%= product.name %></h1>
-            <p class="price">
-                <% if (product.price !== undefined) { %>
-                    Rs.<%= product.price.toFixed(2) %>
-                <% } %>
-            </p>
-            <div class="description">
-                <p><strong>Description:</strong></p>
-                <p><%= product.description %></p>
+      <div class="container mt-3">
+        <button
+          style="margin-left: 30vw; margin-bottom: 1.5vw"
+          id="toggleRatingsBtn"
+          class="ml-5 btn btn-primary"
+        >
+          User Ratings and Reviews
+        </button>
+
+        <div
+          class="user-ratings-section"
+          id="ratingsSection"
+          style="display: none"
+        >
+          <div class="row">
+            <% if (locals.product.userRatings && product.userRatings.length > 0)
+            { %> <% product.userRatings.forEach(userRating => { %>
+            <div class="col-md-4 col-lg-6">
+              <div class="user-rating">
+                <p class="user-name">
+                  <strong>User:</strong> <%= userRating.userId.username %>
+                </p>
+                <div class="rating">
+                  <p>
+                    <strong>Rating:</strong> <%= userRating.rating %> <%=
+                    '★'.repeat(Math.floor(userRating.rating)) +
+                    (userRating.rating % 1 !== 0 ? '½' : '') %>
+                  </p>
+                </div>
+                <p class="review">
+                  <strong>Review:</strong> <%= userRating.review %>
+                </p>
+                <hr />
+              </div>
             </div>
-    
-      </div> -->
-      <!-- Similar Products Section -->
+            <% }); %> <% } else { %>
+            <p>No ratings yet</p>
+
+            <% } %>
+          </div>
+        </div>
+      </div>
+
       <div class="container">
         <div class="row">
           <% if (locals.similar && locals.similar.length > 0) { %>
@@ -297,7 +366,6 @@
               <div class="col-xl-7 col-lg-8 col-md-7">
                 <div class="footer-copy-right">
                   <p>
-                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     Copyright &copy;
                     <script>
                       document.write(new Date().getFullYear());
@@ -305,7 +373,6 @@
                     All rights reserved | This template is made with
                     <i class="fa fa-heart" aria-hidden="true"></i> by
                     <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                   </p>
                 </div>
               </div>
@@ -376,14 +443,56 @@
       <script src="./user_assets/js/jquery.validate.min.js"></script>
       <script src="./user_assets/js/mail-script.js"></script>
       <script src="./user_assets/js/jquery.ajaxchimp.min.js"></script>
-      <link rel="stylesheet" type="text/css" href="/user_assets/css/magiczoomplus.css">
-  <script type="text/javascript" src="/user_assets/js/magiczoomplus.js"></script>
-  <script>
-    // Initialize Magic Zoom Plus
-    $(document).ready(function () {
-      MagicZoomPlus.start();
-    });
-  </script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+      <link
+        rel="stylesheet"
+        type="text/css"
+        href="/user_assets/css/magiczoomplus.css"
+      />
+      <script
+        type="text/javascript"
+        src="/user_assets/js/magiczoomplus.js"
+      ></script>
+      <script>
+        // Initialize Magic Zoom Plus
+        $(document).ready(function () {
+          MagicZoomPlus.start();
+        });
+      </script>
+      <script>
+        var ratingsSection = document.getElementById("ratingsSection");
+        var toggleRatingsBtn = document.getElementById("toggleRatingsBtn");
+
+        toggleRatingsBtn.addEventListener("click", function () {
+          if (ratingsSection.style.display === "none") {
+            ratingsSection.style.display = "block";
+          } else {
+            ratingsSection.style.display = "none";
+          }
+        });
+      </script>
+
+      <script>
+        const aveRating = parseFloat(
+          document.getElementById("avgrating").innerText
+        );
+
+        console.log(aveRating);
+
+        const ratingContainer = document.getElementById("ratingContainer");
+
+        if (aveRating >= 4) {
+          ratingContainer.style.backgroundColor = "green";
+          ratingContainer.style.color = "white";
+        } else if (aveRating >= 3 && aveRating <= 3.9) {
+          ratingContainer.style.backgroundColor = "yellow";
+        } else if (aveRating >= 2 && aveRating <= 2.9) {
+          ratingContainer.style.backgroundColor = "orange";
+        } else if (aveRating >= 0 && aveRating <= 1.9) {
+          ratingContainer.style.backgroundColor = "red";
+          ratingContainer.style.color = "white";
+        }
+      </script>
     </header>
   </body>
 </html>

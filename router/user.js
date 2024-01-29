@@ -8,6 +8,7 @@ const cartcontroller=require('../server/controllers/cartcontroller')
 const checkoutcontroller=require('../server/controllers/checkoutcontroller')
 const orderCountrol=require('../server/controllers/ordercontrol')
 const couponControl=require('../server/controllers/couponcontroller')
+const productcontroller=require('../server/controllers/productcontroller')
 const {loged,signforgot,forgot,logedtohome}=session
 
 //index
@@ -22,8 +23,10 @@ usrouter.get('/filterProducts',uscontroller.filterProducts)
 usrouter.get("/sortProducts",uscontroller.sortProducts)
 usrouter.get("/shoping/:id", uscontroller.shopping)
 
+
 //single product
-usrouter.get("/singleproduct/:id", uscontroller.singleproduct);
+usrouter.get("/singleproduct/:id", uscontroller.singleproduct)
+usrouter.get('/rateAndReview',loged,productcontroller.ratePage)
 
 // profile 
 usrouter.get("/userdetails",loged,profilecontroller.userdetails)

@@ -347,7 +347,7 @@ const userdetails = async (req, res) => {
     try {
         const id = req.params.id;
         const userId = req.session.userId;
-        const update = await orderModel.updateOne({ _id: id }, { status: "Cancelled" });
+        const update = await orderModel.updateOne({ _id: id }, { status: "Cancelation req" });
         const result = await orderModel.findOne({ _id: id });
         if (result.paymentMethod === 'Cash On Delivery') {
             const items = result.items.map(item => ({
@@ -576,7 +576,8 @@ const userdetails = async (req, res) => {
     try {
     const userId = req.session.userId;
     const categories = await catModel.find({});
-    const user = await walletModel.findOne({ userId: userId }).sort({ 'walletTransactions.date': -1});
+    const users=await userModel.findOne({_id:userId});
+    var user = await walletModel.findOne({ userId: userId }).sort({ 'walletTransactions.date': -1});
     
     if (!user) {
         user = await walletModel.create({ userId: userId });
@@ -585,7 +586,7 @@ const userdetails = async (req, res) => {
     const userWallet = user.wallet;
     const usertransactions=user.walletTransactions
     
-    res.render("user/wallet", { categories, userWallet ,usertransactions});
+    res.render("user/wallet", { categories, userWallet ,usertransactions,user:users});
     } catch (err) {
     console.log(err);
       res.status(500).send("Internal Server Error");

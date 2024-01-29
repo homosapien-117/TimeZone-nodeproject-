@@ -1,14 +1,15 @@
 const bcrypt = require("bcrypt");
 const otpgenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
-
+const mongoose=require('mongoose')
 const userModel = require("../models/usermodel");
 const otpModel = require("../models/otpmodel");
 const { Email, pass } = require("dotenv").config({ path: "../.env" });
 const catModel = require("../models/category_model");
 const productModel = require("../models/product_model");
 const bannerModel = require("../models/banner_model");
-
+const WalletModel = require("../models/wallet_model");
+const uuid = require("uuid");
 const {
   emailValid,
   nameValid,
@@ -72,8 +73,8 @@ const index = async (req, res) => {
     const action = req.body.action;
     const prodCount = await productModel.countDocuments();
     const totalPages = Math.ceil(prodCount / limit);
-    console.log("total pages:",totalPages);
-    
+    console.log("total pages:", totalPages);
+
     if (action) {
       page += action;
     }
@@ -110,8 +111,6 @@ const index = async (req, res) => {
     res.render("user/serverError");
   }
 };
-
-
 
 const shopping = async (req, res) => {
   try {
@@ -521,6 +520,7 @@ const signin = async (req, res) => {
     const phone = req.body.phone;
     const password = req.body.password;
     const cpassword = req.body.confirm_password;
+    const code = req.body.code;
 
     console.log("Username:", username);
     console.log("Email:", email);
@@ -558,11 +558,19 @@ const signin = async (req, res) => {
         email: email,
         phone: phone,
         password: hashedpassword,
+        code: uuid.v4(),
       });
 
       req.session.user = user;
       req.session.signin = true;
       req.session.forgot = false;
+      const reference = await userModel.findOne({ code: code.trim() });
+      console.log(reference, "0000");
+      console.log(code, "coooo");
+      if (reference) {
+        req.session.reference = reference._id;
+        console.log(req.session.reference, "fff");
+      }
 
       const otp = generateotp();
       console.log(otp);
@@ -616,6 +624,21 @@ const verifyotp = async (req, res) => {
         if (req.session.signin) {
           await userModel.create(user);
           req.session.signin = false;
+          const reference = req.session.reference;
+          console.log(reference, "yyyy");
+          const refer = await userModel.findOne({ _id: reference });
+          console.log("refer", refer);
+          if (refer) {
+            const wallet = await WalletModel.findOne({ userId: refer._id });
+            wallet.wallet += 100;
+            console.log(wallet, "ppp");
+            wallet.walletTransactions.push({
+              date: new Date(),
+              type: "Credited",
+              amount: 100,
+            });
+            await wallet.save();
+          }
           res.redirect("/login");
         } else if (req.session.forgot) {
           res.redirect("/reenterpassword");
@@ -658,10 +681,10 @@ const profile = async (req, res) => {
   try {
     const categories = await catModel.find();
     const id = req.session.userId;
-    const user = await userModel.findOne({ _id: id }); // Assuming you want to find the first user
+    const user = await userModel.findOne({ _id: id });
     console.log(user.username);
     const name = user.username;
-    res.render("user/profile", { categories, name });
+    res.render("user/profile", { categories, name,userData:user });
     console.log(req.session.user);
   } catch (error) {
     console.log(error);
@@ -673,9 +696,40 @@ const profile = async (req, res) => {
 const singleproduct = async (req, res) => {
   try {
     const id = req.params.id;
-    const product = await productModel.findOne({ _id: id });
+    console.log("haywanu", id);
+    const product = await productModel.findOne({ _id: id }).populate({
+      path: "userRatings.userId",
+      select: "username",
+    });
+    console.log("haywanu", product);
+
     const type = product.type;
-    console.log("type", type);
+
+    const convertedId = new mongoose.Types.ObjectId(id);
+
+    const result = await productModel.aggregate([
+      {
+        $match: { _id: convertedId },
+      },
+      {
+        $unwind: { path: "$userRatings", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$userRatings.rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const averageRating = result.length > 0 ? result[0].averageRating : 0;
+    const totalRatings = result.length > 0 ? result[0].totalRatings : 0;
+
+    console.log("hey there", result);
+
+    console.log(averageRating, totalRatings);
+
     const similar = await productModel
       .find({ type: type, _id: { $ne: id } })
       .limit(4);
@@ -683,12 +737,20 @@ const singleproduct = async (req, res) => {
     const categories = await catModel.find();
     product.images = product.images.map((image) => image.replace(/\\/g, "/"));
     console.log("Image Path:", product.images[0]);
-    res.render("user/singleproduct", { categories, product: product, similar });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("error occured");
+    console.log("ithu rateng aa ", product.userRatings[0]);
+    res.render("user/singleproduct", {
+      categories,
+      product: product,
+      similar,
+      averageRating,
+      totalRatings,
+    });
+  } catch (err) {
+    console.log("Shopping Page Error:", err);
+    res.render("user/serverError")
   }
 };
+
 
 //logout
 const logout = async (req, res) => {
