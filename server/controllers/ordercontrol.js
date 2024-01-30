@@ -89,7 +89,7 @@ const downloadInvoice = async (req, res) => {
 
       total: parseInt(totalAmount),
       tax: 0,
-      bottomNotice: "Thank you for shopping at UrbanSole!",
+      bottomNotice: "Thank you for shopping at Timezone!",
     };
   const result = await easyinvoice.createInvoice(data);
   console.log(result);
