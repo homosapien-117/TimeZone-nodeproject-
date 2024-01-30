@@ -39,7 +39,7 @@ const sendmail = async (email, otp) => {
       service: "gmail",
       auth: {
         user: "ajaykrishna2000117@gmail.com",
-        pass: "lydw qgzv dxkb kkwt",
+        pass: "eblc liux lmdb xkfq",
       },
     });
 

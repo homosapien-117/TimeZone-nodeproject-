@@ -8,8 +8,8 @@ const createCoupon=async(req,res)=>{
         const couponExists = await couponModel.findOne({ couponCode: couponCode });
     
         if (couponExists) {
-            console.log("Coupon exists");
-            res.redirect('/admin/couponList');
+            console.log("Coupon code exists");
+            res.render('admin/addCoupon', { couponExists: true });;
         } else {
             await couponModel.create({
                 couponCode: couponCode,
