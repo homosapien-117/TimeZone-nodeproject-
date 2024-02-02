@@ -1,4 +1,6 @@
 const mongoose=require("mongoose")
+const Category=require('../models/category_model')
+const Product=require('../models/product_model')
 
 const bannerSchema=new mongoose.Schema({
     title:{

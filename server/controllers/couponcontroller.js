@@ -9,7 +9,7 @@ const createCoupon=async(req,res)=>{
     
         if (couponExists) {
             console.log("Coupon exists");
-            res.redirect('/admin/couponList');
+            return res.render('admin/addCoupon', { couponExists: true });
         } else {
             await couponModel.create({
                 couponCode: couponCode,
@@ -43,7 +43,7 @@ const couponList=async(req,res)=>{
 
 const addcouponpage=async(req,res)=>{
     try{
-        res.render('admin/addCoupon')
+        res.render('admin/addCoupon', { couponExists: false });
     }
     catch(err){
         console.log(err)
@@ -69,7 +69,7 @@ const editCouponPage=async (req,res)=>{
     try{
         const id=req.params.id
         const coupon=await couponModel.findOne({_id:id})
-        res.render('admin/editCouponPage',{coupon:coupon})
+        res.render('admin/editCouponPage',{coupon:coupon,})
     }
     catch(err){
         console.log(err);

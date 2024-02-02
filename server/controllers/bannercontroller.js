@@ -4,6 +4,7 @@ const productModel=require('../models/product_model')
 const couponModel = require('../models/coupon_model')
 const { default: mongoose } = require('mongoose')
 
+
 const bannerList=async(req,res)=>{
     try {
         const banners=await bannerModel.find({})
@@ -40,12 +41,18 @@ const addBannerPost = async (req, res) => {
        const { bannerLabel, bannerTitle, bannerSubtitle, bannerColor } = req.body;
    
        let bannerLink;
+       let category = null; 
+       let product = null;
        if (bannerLabel === 'category') {
          bannerLink = req.body.category;
+         
+         console.log(category);
        } else if (bannerLabel === 'product') {
          bannerLink = req.body.product;
+         
        } else if (bannerLabel === 'coupon') {
          bannerLink = req.body.coupon;
+         
        } else {
          bannerLink = 'general';
        }
@@ -65,6 +72,8 @@ const addBannerPost = async (req, res) => {
          },
          color: bannerColor,
          bannerLink: bannerLink,
+         category: category ,
+         product: product
        });
    
        await newBanner.save();

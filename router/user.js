@@ -13,6 +13,9 @@ const {loged,signforgot,forgot,logedtohome}=session
 
 //index
 usrouter.get('/',uscontroller.index)
+// banner
+usrouter.get("/bannerURL",uscontroller.bannerURL)
+//pagination
 usrouter.post('/pagination',uscontroller.index)
 
 
@@ -94,8 +97,7 @@ usrouter.post("/applyCoupon",loged,checkoutcontroller.applyCoupon)
 usrouter.post("/revokeCoupon",loged,checkoutcontroller.recokeCoupon)
 
 
-// banner
-usrouter.get("/bannerURL",uscontroller.bannerURL)
+
 
 //logout
 usrouter.get('/logout',logedtohome,uscontroller.logout)

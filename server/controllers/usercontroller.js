@@ -129,17 +129,17 @@ const bannerURL = async (req, res) => {
   try {
     const bannerId = req.query.id;
     const banner = await bannerModel.findOne({ _id: bannerId });
-    console.log("ithhahnu mwoney", banner.bannerlink);
+    console.log("ithhahnu mwoney", banner.bannerLink);
     if (banner.label == "category") {
-      const categoryId = new mongoose.Types.ObjectId(banner.bannerlink);
+      const categoryId = new mongoose.Types.ObjectId(banner.bannerLink);
       const category = await catModel.findOne({ _id: categoryId });
       res.redirect(`/shop?category=${categoryId}`);
     } else if (banner.label == "product") {
-      const productId = new mongoose.Types.ObjectId(banner.bannerlink);
-      const product = await productModel.findOne({ _id: productId });
+      const productId = new mongoose.Types.ObjectId(banner.bannerLink);
+      const product = await productModel.findOne({ _id: productId});
       res.redirect(`/singleproduct/${productId}`);
     } else if (banner.label == "coupon") {
-      const couponId = new mongoose.Types.ObjectId(banner.bannerlink);
+      const couponId = new mongoose.Types.ObjectId(banner.bannerLink);
       const coupon = await couponModel.findOne({ _id: couponId });
       res.redirect("/Rewards");
     } else {
@@ -158,12 +158,12 @@ const shop = async (req, res) => {
     let products;
 
     if (category) {
-      // If a category is specified, fetch products for that category
+      
       products = await productModel
         .find({ $and: [{ category }, { status: true }] })
         .exec();
     } else {
-      // If no category is specified, fetch all products
+     
       products = await productModel.find({ status: true }).exec();
     }
 
