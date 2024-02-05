@@ -70,6 +70,7 @@
                         <th>status</th>
                         <th>createdAt</th>
                         <th>UpdatedAt</th>
+                        <th>orderDetail</th>
                         
                     </tr>
                 </thead>
@@ -107,6 +108,7 @@
                                   <td>
                                     <%= order.updatedAt ? order.updatedAt.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) : 'N/A' %>
                                   </td>
+                                  <td><a href="/admin/orderDetails/<%= order._id %>"><button >orderDetail</button></a></td>
                             </tr>
                       
                        
@@ -130,6 +132,8 @@
       </div>
       <!-- page-body-wrapper ends -->
     </div>
+  </div>
+    
    
     
     <script src="/adminassets/vendors/js/vendor.bundle.base.js"></script>
@@ -176,5 +180,35 @@
       });
   }
 </script>
+<script>
+  function submitForm(orderId) {
+    const statusElement = document.getElementById('status_' + orderId);
+    const status = statusElement.value;
+
+    if (status === 'Cancelled' && !confirm('Are you sure you want to cancel this order?')) {
+      return false; 
+    }
+
+    fetch('/admin/updateOrderStatus', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `orderId=${orderId}&status=${status}`,
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = '/admin/orderPage';
+        } else {
+            console.error('Failed to update order status');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+  }
+</script>
+
+
   </body>
 </html>

@@ -87,6 +87,7 @@ adminrouter.post(
   sessions.adisAuth,
   ordercontroller.updateorderstatus
 );
+adminrouter.get("/orderDetails/:id",ordercontroller.orderDetails)
 
 adminrouter.get("/couponList", sessions.adisAuth, couponcontroller.couponList);
 adminrouter.get(

@@ -343,9 +343,9 @@
 <div class="order-total">
     <h2><strong>Total Amount:</strong> <%= order.totalPrice %></h2>
     <div style="margin-top: 30px; margin-bottom: 12px; margin-left: 500px">
-        <% if (order.status !== 'Cancelled' && order.status !== 'Returned' && order.status !== 'Delivered') { %>
+        <% if (order.status !== 'Cancelled' && order.status !== 'Returned' && order.status !== 'Delivered'&& order.status !== 'Cancelation req') { %>
             <!-- Code to execute if the condition is true -->
-            <a style="background-color: rgb(181, 0, 0); width: 350px" href="#" class="btn btn-danger" onclick="confirmCancel('<%= order._id %>')">Cancel</a>
+            <a style="background-color: rgb(181, 0, 0); width: 350px" href="#" class="btn btn-danger" onclick="showReasonModal('<%= order._id %>')">Cancel</a>
         <% } else if (order.status === 'Delivered') { %>
             <!-- Code to execute if the condition is false -->
             <a style="background-color: rgb(198, 3, 3) (172, 53, 53)" href="/returnorder/<%= order._id %>" class="btn btn-danger">Return</a>
@@ -356,6 +356,16 @@
             <% } %>
         <% }); %>
     </div>
+
+    <div id="reasonModal" class="modal" style="display: none;">
+      <div class="modal-content" style="width: 30%;">
+          <span class="close" onclick="closeReasonModal()">&times;</span>
+          <h2 style="text-align: center;">Reason for Cancellation</h2>
+          <textarea id="cancellationReason" name="cancellationReason" rows="4" required></textarea>
+          <button onclick="submitCancellation('<%= order._id %>')" style="width: 100%;background-color: rgb(37, 59, 248);" class="btn btn-danger">Submit</button>
+      </div>
+  </div>
+  
 
     <div class="modal" id="rateAndReviewModal" style="display: none;">
         <div class="modal-content" style="width: 30%;">
@@ -522,18 +532,18 @@ function closeModal() {
 }
     </script>
     <script>
-       // Get all star rating inputs
+       
     const starInputs = document.querySelectorAll('.star-rating input');
 
-// Add event listener to each input
+
 starInputs.forEach(function (input) {
     input.addEventListener('click', function () {
         const clickedValue = parseInt(this.value);
 
-        // Loop through all inputs and apply gold color to stars with values less than or equal to the clicked value
+       
         starInputs.forEach(function (input) {
             const starValue = parseInt(input.value);
-            const label = input.nextElementSibling; // Get the corresponding label
+            const label = input.nextElementSibling; 
 
             if (starValue <= clickedValue) {
                 label.style.color = 'gold';
@@ -544,6 +554,36 @@ starInputs.forEach(function (input) {
     });
 });
     </script>
+    <script>
+      function showReasonModal(orderId) {
+          document.getElementById('reasonModal').style.display = 'block';
+      }
+  
+      function closeReasonModal() {
+          document.getElementById('reasonModal').style.display = 'none';
+      }
+  
+      async function submitCancellation(orderId) {
+          const reason = document.getElementById('cancellationReason').value;
+          try {
+              const response = await fetch(`/cancelOrder/${orderId}`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ reason })
+              });
+              if (response.ok) {
+                  window.location.reload(); 
+              } else {
+                  // Handle error
+              }
+          } catch (error) {
+              console.error('Error:', error);
+          }
+      }
+  </script>
+  
     <script src="./user_assets/js/vendor/modernizr-3.5.0.min.js"></script>
     <!-- Jquery, Popper, Bootstrap -->
     <script src="./user_assets/js/vendor/jquery-1.12.4.min.js"></script>

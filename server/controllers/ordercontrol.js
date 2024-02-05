@@ -12,6 +12,16 @@ const orderPage=async(req,res)=>{
     }
 }
 
+const orderDetails=async(req,res)=>{
+  try {
+      
+      const id=req.params.id
+      const order=await orderModel.findById(id)
+      res.render("admin/orderdetails",{orders:order})
+  } catch (error) {
+      
+  }
+}
 
 const updateorderstatus=async(req,res)=>{
     try {
@@ -108,5 +118,6 @@ module.exports={
     orderPage,
     updateorderstatus,
     downloadInvoice,
-    generateInvoice
+    generateInvoice,
+    orderDetails
 }

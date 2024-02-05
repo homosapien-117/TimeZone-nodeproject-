@@ -51,7 +51,10 @@ const orderSchema= new Schema({
             type:Date,
             required:true,
             
-        }
+        },
+        cancellationReason:{
+            type:String
+        },
 })
 
 const orderModel=new mongoose.model("orders",orderSchema)
