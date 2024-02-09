@@ -36,6 +36,7 @@
     "punycode": "^2.3.1",
     "puppeteer": "^21.6.1",
     "razorpay": "^2.9.2",
+    "request": "^2.88.2",
     "session": "^0.1.0",
     "short-unique-id": "^5.0.3",
     "shortid": "^2.2.16",

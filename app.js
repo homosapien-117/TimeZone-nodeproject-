@@ -25,7 +25,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.set("public", path.join(__dirname, "public/user_assets"));
 
 //view engine
-app.set("view engine", "ejs");
+app.set("view engine", "ejs")
 
 app.use(flash());
 app.use(express.json());
